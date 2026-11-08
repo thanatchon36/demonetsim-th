@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DemonetSim-TH</title>
+<meta name="description" content="Preprint: can demonetization defeat grey capital? Evidence, a calibrated agent-based model and a research agenda for retiring Thailand's 1,000-baht note.">
+<meta name="author" content="Thanatchon Chongmankhong">
+<style>
+/* Web reader for paper/en/main.tex, in the format of the thainowcast reader: one reading column
+   (~46rem) with a results strip up top. System font stacks only: the page is a single self-contained
+   file with no third-party requests. Colour tokens on :root, redefined for dark. */
+:root {
+  --paper: #fbfbf9; --ink: #17191c; --ink-2: #4c5058; --rule: #dcdcd6;
+  --accent: #1f5fae; --accent-soft: #e6eef8;
+  --pos: #1d6b52; --pos-soft: #e3f1ea; --null: #6b6f78; --null-soft: #eeeeea;
+  --find: #8a5a12; --find-soft: #f6eedd; --plate: #ffffff; --quote: #f3f3ef;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15171a; --ink: #e8e9ec; --ink-2: #a6abb4; --rule: #30343a;
+    --accent: #7fb0ec; --accent-soft: #1b2a3d; --pos: #7dcfac; --pos-soft: #16302a;
+    --null: #a6abb4; --null-soft: #23262b; --find: #e7bd73; --find-soft: #33291a;
+    --plate: #f4f4f2; --quote: #1d2024; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15171a; --ink: #e8e9ec; --ink-2: #a6abb4; --rule: #30343a;
+  --accent: #7fb0ec; --accent-soft: #1b2a3d; --pos: #7dcfac; --pos-soft: #16302a;
+  --null: #a6abb4; --null-soft: #23262b; --find: #e7bd73; --find-soft: #33291a;
+  --plate: #f4f4f2; --quote: #1d2024; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.62 var(--font-body); }
+.page { max-width: 46rem; margin: 0 auto; padding-inline: 16px; padding-block: 48px 72px;
+  display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 650; text-wrap: balance; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4.2vw, 2.35rem); margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.4rem; margin: 2.2em 0 0.5em; }
+h3 { font-size: 1.12rem; margin: 1.8em 0 0.4em; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+code { font: 500 0.84em var(--font-mono); overflow-wrap: anywhere; }
+pre { background: var(--quote); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px;
+  overflow-x: auto; font-size: 0.84rem; line-height: 1.5; }
+pre code { font-weight: 400; font-size: inherit; overflow-wrap: normal; }
+.masthead { display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--rule); padding-bottom: 28px; }
+.kicker { margin: 0; font: 500 0.78rem var(--font-mono); text-transform: uppercase; letter-spacing: 0.09em; color: var(--accent); }
+.subtitle { margin: 0; font-style: italic; color: var(--ink-2); font-size: 1.05rem; }
+.byline { margin: 0; color: var(--ink-2); }
+.meta { margin: 0; font: 400 0.8rem/1.6 var(--font-mono); color: var(--ink-2); }
+.meta b { font-weight: 500; color: var(--ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; }
+.actions a { display: inline-block; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px;
+  font: 500 0.78rem var(--font-mono); text-decoration: none; color: var(--ink); }
+.actions a:hover { border-color: var(--accent); color: var(--accent); }
+.abstract h2, .results h2, .toc h2, .cite h2 { margin: 0 0 10px; font-size: 0.82rem; font-family: var(--font-mono);
+  font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-2); }
+.abstract-body p { margin: 0 0 0.8em; font-size: 1.04rem; }
+.abstract-body p:last-child { margin-bottom: 0; }
+.results .note { margin: 0 0 14px; color: var(--ink-2); font-size: 0.95rem; }
+.result-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 8px; }
+.r { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "id tag" "text text"; gap: 2px 10px;
+  align-content: start; padding: 10px 12px; border-radius: 6px; border-left: 3px solid; font-size: 0.9rem; line-height: 1.4; }
+.r-pos { background: var(--pos-soft); border-color: var(--pos); }
+.r-ref { background: var(--find-soft); border-color: var(--find); }
+.r-null, .r-nf { background: var(--null-soft); border-color: var(--null); }
+.r-id { grid-area: id; font: 500 0.85rem var(--font-mono); }
+.r-text { grid-area: text; }
+.r-text small { display: block; color: var(--ink-2); font-size: 0.8rem; margin-top: 2px; }
+.toc ul { margin: 0; padding-left: 1.2em; columns: 2 14rem; column-gap: 32px; }
+.toc li { break-inside: avoid; }
+.toc ul ul { columns: 1; padding-left: 1em; font-size: 0.92em; color: var(--ink-2); }
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.paper h1 { font-size: 1.55rem; margin: 2em 0 0.5em; padding-top: 0.6em; border-top: 1px solid var(--rule); }
+.paper p, .paper li { hyphens: auto; }
+.paper p { margin: 0 0 1em; }
+.paper math[display="block"] { overflow-x: auto; max-width: 100%; }
+/* numbered display equations: the number sits at the right margin, as in the PDF */
+.paper .eq { display: flex; align-items: center; gap: 12px; margin: 0.6em 0; }
+.paper .eq math[display="block"] { flex: 1; margin: 0; }
+.paper .eqn { font-family: var(--font-body); color: var(--ink-2); white-space: nowrap; }
+/* MathML does not line-break: a long inline formula scrolls on its own instead of widening the page */
+.paper p > math { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+.paper .header-section-number { color: var(--accent); margin-right: 0.5em; font-family: var(--font-mono); font-size: 0.85em; font-weight: 500; }
+.paper blockquote { margin: 1.2em 0; padding: 10px 16px; border-left: 3px solid var(--rule); background: var(--quote);
+  border-radius: 0 6px 6px 0; font-size: 0.93rem; color: var(--ink-2); }
+.paper blockquote p:last-child { margin-bottom: 0; }
+figure { margin: 1.6em 0; display: flex; flex-direction: column; gap: 10px; }
+figure img { background: var(--plate); padding: 12px; border-radius: 6px; border: 1px solid var(--rule); max-width: 100%; height: auto; }
+/* the night-lights images are dark by design: no light plate around them */
+figure img.night { background: #03060d; padding: 0; }
+figcaption, caption, .tcap { font-size: 0.88rem; color: var(--ink-2); line-height: 1.45; text-align: left; }
+caption { caption-side: top; padding-bottom: 8px; }
+.tbl { margin: 1.6em 0; }
+.paper .tcap { margin: 0 0 8px; hyphens: auto; }
+.tscroll { overflow-x: auto; }
+/* Tables keep their natural width (scrolling sideways when wider than the column); only long text cells wrap. */
+.paper table { border-collapse: collapse; width: max-content; min-width: 100%;
+  font: 400 0.78rem/1.45 var(--font-mono); font-variant-numeric: tabular-nums; }
+.paper td { max-width: 17em; }
+/* Code in table cells must not break per letter on phones; the table scrolls sideways instead. */
+.paper table code { overflow-wrap: normal; word-break: normal; white-space: nowrap; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { font-weight: 500; color: var(--ink-2); border-bottom-color: var(--ink-2); }
+.paper strong { font-weight: 650; }
+.cite { min-width: 0; }
+/* BibTeX keeps its lines intact (no mid-URL breaks); the block scrolls sideways on narrow screens. */
+.cite pre { overflow-x: auto; }
+.cite pre, .cite pre code { white-space: pre; overflow-wrap: normal; word-break: normal; }
+.colophon { border-top: 1px solid var(--rule); padding-top: 20px; color: var(--ink-2); font-size: 0.85rem; }
+.colophon p { margin: 0 0 0.7em; }
+@media (max-width: 480px) { body { font-size: 16px; } .page { padding-block: 28px 48px; gap: 28px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="page">
+<header class="masthead">
+  <p class="kicker">Preprint · DemonetSim-TH</p>
+  <h1>Can Demonetization Defeat Grey Capital?</h1>
+  <p class="subtitle">Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring Thailand’s 1,000-Baht Note</p>
+  <p class="byline">Thanatchon Chongmankhong · <a href="https://github.com/thanatchon36/demonetsim-th">github.com/thanatchon36/demonetsim-th</a></p>
+  <p class="meta"><b>November 7, 2026</b> · demonetization, high-denomination banknotes, money laundering, shadow economy, agent-based modeling, approximate Bayesian computation, Thailand · JEL E41, E42, E58, H26, K42, O17, C63</p>
+  <ul class="actions"><li><a href="paper_en.pdf">Download PDF</a></li><li><a href="paper_th.pdf">ฉบับภาษาไทย (PDF)</a></li><li><a href="https://github.com/thanatchon36/demonetsim-th">Code and replication</a></li></ul>
+</header>
+<section class="abstract" aria-label="Abstract">
+  <h2>Abstract</h2>
+  <div class="abstract-body">Proposals to withdraw Thailand’s 1,000-baht banknote promise to squeeze grey and black capital, vote buying and corruption. This paper evaluates that promise by combining a structured synthesis of twelve demonetization episodes, a cross-country measure of denomination size, and <em>DemonetSim-TH</em>, an agent-based model in which illicit holders choose among direct deposit, structuring through money mules, conversion into alternative stores of value, amnesty and abandonment under capacity-constrained laundering, while honest holders face a liquidity gap governed by replacement logistics. The model is calibrated to India’s 2016 demonetization by approximate Bayesian computation. Four results stand out. First, at 0.38 percent of GDP per capita the 1,000-baht note is a mid-sized “large note”, about a quarter of the EUR 500 at its withdrawal. Second, an India-style shock destroys or seizes a median of 7.7 percent of illicit cash while generating about one sixth of India’s liquidity disruption, roughly 90 percent of which falls on vulnerable and informal holders. Third, India’s 99.3 percent return rate is consistent with illicit shares between 3 and 29 percent and therefore does not identify the illicit stock. Fourth, a global sensitivity analysis shows that the bite of any design hinges on laundering capacity relative to the illicit stock, whereas disruption depends almost entirely on replacement logistics; a gradual phase-out combined with anti-money-laundering (AML) measures achieves a comparable bite (6.1 percent) at negligible liquidity cost. We formalize these regularities as a <em>demonetization trilemma</em> and propose three identification strategies to test whether the 1,000-baht note is in fact a preferred medium of illicit exchange.</div>
+</section>
+<section class="results" aria-label="Results at a glance">
+  <h2>Results at a glance</h2>
+  <p class="note">Headline numbers, read from the committed model outputs. They follow from assumptions and approximate statistics; they are not forecasts. Amber: model results; grey: pending.</p>
+  <ul class="result-list"><li class="r r-ref"><span class="r-id">Note size</span><span class="r-text">The 1,000-baht note is worth 0.38% of GDP per capita<small>about 24% of the EUR 500 at its withdrawal (1.58%); a mid-sized large note</small></span></li>
+<li class="r r-ref"><span class="r-id">Shock · bite</span><span class="r-text">An India-style shock destroys or seizes a median 7.7% of illicit cash<small>interquartile range 5.5% to 15.4%; scenario S1, 600 draws, seed 7</small></span></li>
+<li class="r r-ref"><span class="r-id">Shock · disruption</span><span class="r-text">Liquidity disruption 17 on an India 2016 = 100 scale<small>91% of it borne by vulnerable households and informal businesses</small></span></li>
+<li class="r r-ref"><span class="r-id">India 2016</span><span class="r-text">A 99.3% return rate fits illicit shares from 3% to 29%<small>ABC keeps 1,214 of 4,000 draws; the return rate does not identify the illicit stock</small></span></li>
+<li class="r r-ref"><span class="r-id">Sensitivity</span><span class="r-text">Laundering capacity drives the bite (PRCC -0.73)<small>replacement speed drives disruption (PRCC -0.97); scenario S1</small></span></li>
+<li class="r r-ref"><span class="r-id">Phase-out + AML</span><span class="r-text">Bites 6.1% at a disruption index of 0<small>against 8.5% and 97 for India 2016 (calibrated draws)</small></span></li>
+<li class="r r-null"><span class="r-id">Thai data</span><span class="r-text">Verified Thai inputs pending<small>statistics are approximations and parameters assumptions; Bank of Thailand banknote data replace them</small></span></li></ul>
+</section>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2>
+<ul>
+<li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#sec:background" id="toc-sec:background"><span class="toc-section-number">2</span> International evidence and the Thai setting</a></li>
+<li><a href="#sec:framework" id="toc-sec:framework"><span class="toc-section-number">3</span> Conceptual framework: the demonetization trilemma</a></li>
+<li><a href="#sec:model" id="toc-sec:model"><span class="toc-section-number">4</span> DemonetSim-TH: model and calibration</a></li>
+<li><a href="#sec:results" id="toc-sec:results"><span class="toc-section-number">5</span> Results</a></li>
+<li><a href="#sec:policy" id="toc-sec:policy"><span class="toc-section-number">6</span> Assessment and policy design</a></li>
+<li><a href="#sec:agenda" id="toc-sec:agenda"><span class="toc-section-number">7</span> A research agenda</a></li>
+<li><a href="#sec:limits" id="toc-sec:limits"><span class="toc-section-number">8</span> Limitations</a></li>
+<li><a href="#sec:conclusion" id="toc-sec:conclusion"><span class="toc-section-number">9</span> Conclusion</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
+<li><a href="#app:model" id="toc-app:model">Appendix A. Model details</a></li>
+<li><a href="#app:repl" id="toc-app:repl">Appendix B. Replication</a></li>
+</ul>
+</nav>
+<article class="paper">
+<h1 data-number="1" id="introduction"><span class="header-section-number">1</span> Introduction</h1>
+<p>Cash remains the medium of choice for transactions that are meant to leave no trace, and large banknotes make it especially convenient: one million US dollars in USD 100 notes weighs about ten kilograms, the same value in EUR 500 notes about two (<a href="#ref-sands2016">Sands et al., 2016</a>; <a href="#ref-rogoff2016">Rogoff, 2016</a>). This observation underlies a series of decisions to retire large notes—the euro area stopped issuing the EUR 500 in 2019, Canada stopped issuing its CAD 1,000 in 2000 and Singapore its SGD 10,000 in 2014—and, most dramatically, India’s overnight demonetization of 86 percent of its currency by value in November 2016.</p>
+<p>In Thailand, the idea of withdrawing the 1,000-baht note resurfaces periodically as a remedy for “grey capital”, “black capital”, vote buying and corruption. The argument is intuitive; its empirical premise is not established. India’s experience is sobering: 99.3 percent of the demonetized value returned to the banking system (<a href="#ref-rbi2018">Reserve Bank of India, 2018</a>); the cash crunch lowered the growth of economic activity by at least two percentage points in the quarter of the shock (<a href="#ref-chodorowreich2020">Chodorow-Reich et al., 2020</a>); and although electronic payments expanded (<a href="#ref-crouzet2023">Crouzet et al., 2023</a>), the ratio of currency to GDP returned to its earlier level within a few years (<a href="#ref-lahiri2020">Lahiri, 2020</a>).</p>
+<p>This paper asks three questions. What does international experience imply about the effectiveness and costs of demonetization as an instrument against illicit wealth? Under alternative designs, how would retiring the 1,000-baht note affect the stock of illicit cash, the economy and its most vulnerable participants, and the operating costs of the currency system? And if the policy were pursued, how should it be designed, and which empirical questions must be answered first?</p>
+<p>We proceed in three steps. We synthesize twelve episodes into a typology and six stylized facts, and place the 1,000-baht note on a cross-country scale of denomination size. We then develop a stylized model in which the state cannot identify illicit holdings, audit capacity is finite and replacement currency is supplied at a bounded rate. The model yields a conditional impossibility result, the demonetization trilemma: no design simultaneously destroys a large share of illicit cash (<em>bite</em>), spares honest holders (<em>smoothness</em>) and prevents the exchange from becoming a laundering channel (<em>integrity</em>) unless audit capacity exceeds laundering throughput and replacement currency is pre-positioned in secret. Finally, we quantify the trade-offs with DemonetSim-TH, an agent-based model calibrated to India 2016 by approximate Bayesian computation (ABC), and probe it with a global sensitivity analysis.</p>
+<p>The results are summarized in the abstract. Three deserve emphasis. First, the bite of a shock design is small even in the calibrated model (median 7.7 percent), and its distribution is right-skewed: large bites arise only when illicit holdings are large relative to the capacity of laundering networks. Second, the most widely cited statistic from India—the 99.3 percent return rate—rules out large-scale extinguishment but is nearly uninformative about the size of the illicit stock. Third, the levers that govern the bite (laundering capacity, illicit share, structuring costs) are disjoint from those that govern disruption (replacement logistics), which is why a phase-out combined with AML measures dominates a shock: it moves the stock through a tighter net without starving the economy of cash.</p>
+<p>The paper contributes to three literatures. It adds a formal and quantitative treatment of the <em>stock</em> channel through which demonetization is supposed to work to a debate dominated by arguments about the <em>flow</em> benefits of retiring large notes (<a href="#ref-rogoff1998">Rogoff, 1998</a>; <a href="#ref-rogoff2016">Rogoff, 2016</a>; <a href="#ref-sands2016">Sands et al., 2016</a>) and by ex post evaluations of India’s episode (<a href="#ref-chodorowreich2020">Chodorow-Reich et al., 2020</a>; <a href="#ref-lahiri2020">Lahiri, 2020</a>; <a href="#ref-crouzet2023">Crouzet et al., 2023</a>). It contributes to the economics of crime and money laundering (<a href="#ref-becker1968">Becker, 1968</a>; <a href="#ref-unger2007">Unger, 2007</a>) by modeling laundering as a capacity-constrained market, which implies that enforcement intensity matters far less than laundering capacity once the latter is abundant. And it adds to the measurement literature on the shadow economy (<a href="#ref-tanzi1983">Tanzi, 1983</a>; <a href="#ref-schneider2000">Schneider and Enste, 2000</a>; <a href="#ref-medina2018">Medina and Schneider, 2018</a>) a non-identification result: aggregate return rates cannot discriminate between small illicit stocks and large but well-laundered ones.</p>
+<p>The analysis also draws on several adjacent literatures. Cash in circulation has risen in many economies despite the spread of digital payments, largely because cash is held as a store of value (<a href="#ref-bech2018">Bech et al., 2018</a>; <a href="#ref-jobst2017">Jobst and Stix, 2017</a>), and large notes are disproportionately hoarded or held abroad (<a href="#ref-rogoff1998">Rogoff, 1998</a>). Europol documents the role of high-denomination notes in organized crime (<a href="#ref-europol2015">Europol, 2015</a>), while UNODC describes a shift of laundering in East and Southeast Asia toward casinos, underground banking and stablecoins (<a href="#ref-unodc2024">UNODC, 2024</a>). Work on vote buying emphasizes monitoring and reciprocity rather than denomination (<a href="#ref-stokes2005">Stokes, 2005</a>; <a href="#ref-vicente2014">Vicente, 2014</a>), and work on corruption stresses measurement challenges that also afflict the evaluation of demonetization (<a href="#ref-olken2012">Olken and Pande, 2012</a>).</p>
+<p>Section <a href="#sec:background">2</a> reviews international evidence and the Thai setting. Section <a href="#sec:framework">3</a> develops the conceptual framework. Section <a href="#sec:model">4</a> describes the model and its calibration, and Section <a href="#sec:results">5</a> reports results. Section <a href="#sec:policy">6</a> assesses costs, benefits and designs, and Section <a href="#sec:agenda">7</a> sets out a research agenda. Section <a href="#sec:limits">8</a> discusses limitations and Section <a href="#sec:conclusion">9</a> concludes.</p>
+<h1 data-number="2" id="sec:background"><span class="header-section-number">2</span> International evidence and the Thai setting</h1>
+<h2 data-number="2.1" id="a-typology-of-demonetization"><span class="header-section-number">2.1</span> A typology of demonetization</h2>
+<p>We classify designs along two dimensions: whether the decision is announced in advance, and whether legal-tender status lapses at a deadline or persists. Table <a href="#tab:typology">1</a> distinguishes four designs; the fourth retains the note but restricts the use of cash.</p>
+<div id="tab:typology">
+<div class="tbl"><p class="tcap"><b>Table 1.</b> A typology of demonetization designs</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Design</th>
+<th style="text-align: left;">Defining features</th>
+<th style="text-align: left;">Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A. Shock</td>
+<td style="text-align: left;">Unannounced; legal tender lapses at announcement; short exchange window</td>
+<td style="text-align: left;">India 2016; Venezuela 2016; Soviet Union 1991; Myanmar 1987</td>
+</tr>
+<tr>
+<td style="text-align: left;">B. Announced, short window</td>
+<td style="text-align: left;">Usable until a deadline, then exchanged; often combined with a redesign</td>
+<td style="text-align: left;">Nigeria 2022–23; Malaysia 1998–99</td>
+</tr>
+<tr>
+<td style="text-align: left;">C. Gradual phase-out</td>
+<td style="text-align: left;">Issuance stops; legal tender persists for years or notes remain redeemable indefinitely</td>
+<td style="text-align: left;">Euro area (EUR 500); Canada (CAD 1,000); Singapore (SGD 10,000); India 2023 (INR 2,000)</td>
+</tr>
+<tr>
+<td style="text-align: left;">D. Cash restrictions</td>
+<td style="text-align: left;">Notes retained; caps on cash payments and reporting thresholds</td>
+<td style="text-align: left;">France, Italy, Spain; EU-wide cap of EUR 10,000 from 2027</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h2 data-number="2.2" id="twelve-episodes"><span class="header-section-number">2.2</span> Twelve episodes</h2>
+<p>Table <a href="#tab:episodes">2</a> summarizes twelve episodes. The evidence is uneven—rigorous evaluations exist essentially only for India 2016—so the table should be read as a structured synthesis rather than a meta-analysis.</p>
+<div id="tab:episodes">
+<div class="tbl"><p class="tcap"><b>Table 2.</b> Demonetization episodes</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Episode</th>
+<th style="text-align: left;">Notes (share of currency)</th>
+<th style="text-align: left;">Design</th>
+<th style="text-align: left;">Stated aims</th>
+<th style="text-align: left;">Main outcomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">India 2016</td>
+<td style="text-align: left;">INR 500 and 1,000 (about 86%)</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Black money, counterfeits, terror finance; later cashless payments</td>
+<td style="text-align: left;">99.3% returned; growth at least 2 pp lower in the shock quarter; partly persistent digital adoption</td>
+</tr>
+<tr>
+<td style="text-align: left;">Venezuela 2016</td>
+<td style="text-align: left;">VES 100</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Hoarding by cross-border mafias</td>
+<td style="text-align: left;">New notes not ready; unrest; deadline repeatedly extended</td>
+</tr>
+<tr>
+<td style="text-align: left;">Soviet Union 1991</td>
+<td style="text-align: left;">RUB 50 and 100</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Speculation, shadow economy</td>
+<td style="text-align: left;">Three-day exchange with caps; collapse of confidence</td>
+</tr>
+<tr>
+<td style="text-align: left;">Myanmar 1987</td>
+<td style="text-align: left;">25, 35 and 75 kyat</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Black market</td>
+<td style="text-align: left;">No compensation; most money voided; contributed to the 1988 uprising</td>
+</tr>
+<tr>
+<td style="text-align: left;">North Korea 2009</td>
+<td style="text-align: left;">Redenomination 100:1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">Private market activity</td>
+<td style="text-align: left;">Savings wiped out; unrest; official reportedly executed</td>
+</tr>
+<tr>
+<td style="text-align: left;">Nigeria 2022–23</td>
+<td style="text-align: left;">NGN 200, 500, 1,000 (redesign)</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">Counterfeits, hoarding, vote buying, cashless policy</td>
+<td style="text-align: left;">Severe shortages; protests; Supreme Court extended old notes to end-2023</td>
+</tr>
+<tr>
+<td style="text-align: left;">Malaysia 1998–99</td>
+<td style="text-align: left;">MYR 500 and 1,000</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">Offshore ringgit, laundering</td>
+<td style="text-align: left;">Limited domestic effects (details to verify)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Euro area 2016–19</td>
+<td style="text-align: left;">EUR 500 (about 28%)</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">Illicit use</td>
+<td style="text-align: left;">No disruption; effect on crime not established</td>
+</tr>
+<tr>
+<td style="text-align: left;">Canada 2000/2021</td>
+<td style="text-align: left;">CAD 1,000</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">Laundering, organized crime</td>
+<td style="text-align: left;">Smooth; legal tender removed in 2021; redeemable</td>
+</tr>
+<tr>
+<td style="text-align: left;">Singapore 2014</td>
+<td style="text-align: left;">SGD 10,000</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">Laundering risk (preventive)</td>
+<td style="text-align: left;">Smooth</td>
+</tr>
+<tr>
+<td style="text-align: left;">United States 1969</td>
+<td style="text-align: left;">USD 500–10,000</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">Lack of use</td>
+<td style="text-align: left;">Smooth; still legal tender</td>
+</tr>
+<tr>
+<td style="text-align: left;">India 2023</td>
+<td style="text-align: left;">INR 2,000 (about 11%)</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">Denomination management</td>
+<td style="text-align: left;">About 97–98% returned within months; no disruption</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p><em>Notes:</em> Design letters refer to Table <a href="#tab:typology">1</a>. Shares and outcomes are approximate and compiled from memory; they require verification against central-bank and court documents.</p>
+<p>Six stylized facts emerge.</p>
+<ol>
+<li><p><em>Returns are near-complete.</em> Almost all demonetized value returns: 99.3 percent in India 2016 (<a href="#ref-rbi2018">Reserve Bank of India, 2018</a>) and about 97–98 percent of the INR 2,000 notes withdrawn in 2023. Section <a href="#sec:ident">5.3</a> shows that high returns are consistent with small illicit stocks and with large but laundered ones.</p></li>
+<li><p><em>Logistics govern disruption.</em> The crises in India (2016), Venezuela (2016) and Nigeria (2023) were driven by shortfalls of replacement currency.</p></li>
+<li><p><em>Incidence is regressive.</em> Costs fall on cash-dependent and informal participants (<a href="#ref-chodorowreich2020">Chodorow-Reich et al., 2020</a>).</p></li>
+<li><p><em>Digital substitution is partial.</em> Electronic payments rise and some adoption persists (<a href="#ref-crouzet2023">Crouzet et al., 2023</a>), but cash demand rebounds (<a href="#ref-lahiri2020">Lahiri, 2020</a>).</p></li>
+<li><p><em>Gradual withdrawals are cheap but target flows, not stocks.</em> The euro area, Canada and Singapore reported no disruption, but also made no attempt to extinguish existing illicit holdings (<a href="#ref-ecb2016">European Central Bank, 2016</a>).</p></li>
+<li><p><em>Abrupt designs carry legitimacy risks.</em> Confiscatory or abrupt designs triggered unrest in Myanmar, the Soviet Union, North Korea and Venezuela. India’s Supreme Court upheld the 2016 decision by four to one, the dissent holding that it required legislation (<a href="#ref-scindia2023">Supreme Court of India, 2023</a>); Nigeria’s Supreme Court extended the validity of old notes.</p></li>
+</ol>
+<h2 data-number="2.3" id="the-thai-setting"><span class="header-section-number">2.3</span> The Thai setting</h2>
+<p>Banknotes in circulation are approximately THB 1.7–2.1 trillion, about 10 percent of GDP, of which the 1,000-baht note accounts for an estimated 65–80 percent by value; our central value of 72 percent implies a stock of about THB 1.37 trillion, or 1.4 billion notes (<a href="#ref-bot">Bank of Thailand, various years</a>). The note is both the workhorse of ATM dispensing and a household store of value. At roughly USD 28–30 it is worth less than a third of a USD 100 note.</p>
+<figure id="fig:relvalue" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/relvalue.svg" />
+<figcaption><b>Figure 1.</b> <strong>The 1,000-baht note is a mid-sized “large note”.</strong> Face value of one note relative to nominal GDP per capita in the year indicated (log scale). At 0.38%, the THB 1,000 is about a quarter of the EUR 500 at its withdrawal. Filled grey dots mark notes withdrawn or no longer issued, hollow dots notes in circulation, and the dashed line the THB 1,000. GDP per capita and exchange rates are approximations. Source: <code>denomination_metrics()</code> in the replication code.</figcaption>
+</figure>
+<p>Figure <a href="#fig:relvalue">1</a> places the note on a cross-country scale. At 0.38 percent of GDP per capita—about 1.4 days of average income—it is comparable to the largest notes of the Philippines and Vietnam but between two and thirty-seven times smaller, relative to income, than the notes retired in the euro area, Canada, Singapore, Malaysia and India. The argument that large notes facilitate crime (<a href="#ref-rogoff2016">Rogoff, 2016</a>; <a href="#ref-sands2016">Sands et al., 2016</a>) therefore applies to the 1,000-baht note with much less force than to the EUR 500. Figure <a href="#fig:bulk">2</a> shows the physical counterpart: withdrawing the note doubles the bulk of large cash payments, from 10 to 19 kilograms per THB 10 million, but leaves far more compact substitutes—US dollar notes, gold and stablecoins—untouched.</p>
+<figure id="fig:bulk" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/bulk.svg" />
+<figcaption><b>Figure 2.</b> <strong>Withdrawing the note doubles the bulk of large cash payments but leaves compact substitutes untouched.</strong> (a) Weight and (b) volume of THB 10 million in each form; blue bars show the state after withdrawal. In 100-baht notes the same sum would weigh 90 kg and fill 119 litres. Notes weigh about one gram and are 0.11 mm thick; THB 33 per USD, USD 1.15 per EUR and USD 4,000 per troy ounce of gold. Source: <code>bulk_table()</code> in the replication code.</figcaption>
+</figure>
+<p>Table <a href="#tab:channels">3</a> assesses how much Thailand’s main illicit channels rely on the note. The assessment is qualitative and is itself a hypothesis (H3 in Section <a href="#sec:framework">3</a>); much of the modern “grey capital” economy, notably call-centre scams and online gambling, runs through mule accounts and crypto-assets rather than cash.</p>
+<div id="tab:channels">
+<div class="tbl"><p class="tcap"><b>Table 3.</b> Reliance of illicit channels on the 1,000-baht note (author’s assessment)</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Channel</th>
+<th style="text-align: left;">Reliance on 1,000-baht notes</th>
+<th style="text-align: left;">Expected effect of withdrawal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Call-centre and online scams</td>
+<td style="text-align: left;">Low: funds move through mule accounts into crypto-assets</td>
+<td style="text-align: left;">Negligible</td>
+</tr>
+<tr>
+<td style="text-align: left;">Online gambling</td>
+<td style="text-align: left;">Low: mule accounts and e-wallets</td>
+<td style="text-align: left;">Negligible</td>
+</tr>
+<tr>
+<td style="text-align: left;">Narcotics</td>
+<td style="text-align: left;">Medium: cash at retail level; crypto and informal remittance at wholesale level</td>
+<td style="text-align: left;">Higher short-run transport costs</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bribery and corruption</td>
+<td style="text-align: left;">Medium to high: large cash transfers, but final stores are assets and nominees</td>
+<td style="text-align: left;">Harder delivery; converted assets untouched</td>
+</tr>
+<tr>
+<td style="text-align: left;">Vote buying</td>
+<td style="text-align: left;">Low to medium: per-capita payments of hundreds to a few thousand baht</td>
+<td style="text-align: left;">Small; substitution to 500s, transfers, in-kind gifts</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tax evasion by cash businesses</td>
+<td style="text-align: left;">High for cash-held portion</td>
+<td style="text-align: left;">Partial; most can be structured or converted</td>
+</tr>
+<tr>
+<td style="text-align: left;">Foreign grey capital and nominees</td>
+<td style="text-align: left;">Low: corporate accounts and real estate</td>
+<td style="text-align: left;">Negligible</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p>Instruments that target illicit finance more directly already exist: the Currency Act B.E. 2501 (1958), under which the authority to revoke legal-tender status must be examined; the Anti-Money Laundering Act B.E. 2542 (1999), which requires reporting of cash transactions above THB 2 million; the Emergency Decree on Measures for the Prevention and Suppression of Technology Crimes B.E. 2566 (2023), which targets mule accounts; and a 2019 amendment of the Revenue Code that requires financial institutions to report high-frequency electronic receipts. Thailand has no general cap on cash payments, unlike several EU member states and the forthcoming EU-wide limit (<a href="#ref-amlr2024">European Union, 2024</a>). On the cost side, Thailand is an aged society (roughly one in five citizens is 60 or older), about half of employment is informal, many farmers sell output for cash, several million migrant workers have limited bank access, and baht circulates in border economies of Lao PDR, Cambodia and Myanmar. Digital payments are pervasive (PromptPay operates since 2017) but concentrated among urban, working-age users.</p>
+<h1 data-number="3" id="sec:framework"><span class="header-section-number">3</span> Conceptual framework: the demonetization trilemma</h1>
+<h2 data-number="3.1" id="environment"><span class="header-section-number">3.1</span> Environment</h2>
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> denote the value of the notes to be demonetized and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>∈</mo><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s\in(0,1)</annotation></semantics></math> the share held as illicit wealth, so that the illicit stock is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>=</mo><mi>s</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">S=sK</annotation></semantics></math>. A design specifies a notice period <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">L\ge 0</annotation></semantics></math>, an exchange window <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">W&gt;0</annotation></semantics></math> and a legal-tender rule: under a shock legal tender lapses at announcement (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">L=0</annotation></semantics></math>); under an announced design it lapses at the deadline; under a phase-out it persists for years and the notes remain redeemable.</p>
+<p><em>Laundering.</em> Illicit holders can convert notes into alternative stores of value (gold, foreign currency, stablecoins, real assets) through intermediaries with aggregate capacity <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math> per day at proportional cost <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mi>c</mi></msub><annotation encoding="application/x-tex">f_c</annotation></semantics></math>, for as long as notes are accepted; structure deposits through money mules with capacity <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math> per day at cost <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mi>m</mi></msub><annotation encoding="application/x-tex">f_m</annotation></semantics></math>; deposit directly; declare under an amnesty at tax rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>; or abandon the notes. Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℓ</mi><mo>=</mo><mi>c</mi><mo>+</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">\ell=c+m</annotation></semantics></math> denote laundering capacity per day and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math> the period during which laundering channels operate (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mi>L</mi><mo>+</mo><mi>W</mi></mrow><annotation encoding="application/x-tex">T=L+W</annotation></semantics></math>).</p>
+<p><em>Enforcement.</em> Deposits arrive at rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mi>/</mi><mi>W</mi></mrow><annotation encoding="application/x-tex">K/W</annotation></semantics></math> during the window. The authorities can scrutinize value <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math> per day with quality <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>κ</mi><mo>∈</mo><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\kappa\in(0,1]</annotation></semantics></math>, so the audit probability per unit deposited is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>A</mi><mi>W</mi><mi>/</mi><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">a(W)=\min\{1,AW/K\}</annotation></semantics></math>, and an illicit unit passing through the banking system is detected with probability <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mi>κ</mi><mspace width="0.167em"></mspace><mi>q</mi><mspace width="0.167em"></mspace><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p=\kappa\,q\,a(W)</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>≤</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q\le 1</annotation></semantics></math> captures how much harder structured deposits are to flag.</p>
+<p><em>Replacement.</em> When legal tender lapses, a share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math> of the withdrawn value has already been replaced; replacement then proceeds at rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> per day.</p>
+<p><em>Objectives.</em> The state cares about the <em>bite</em> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>, the share of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math> extinguished or captured; the <em>disruption</em> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math> imposed on honest holders; and the <em>laundering share</em> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>, the share of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math> that enters the financial system undetected.</p>
+<div id="ass:anon" class="assumption">
+<p><strong>Assumption 1</strong> (Anonymity). The state cannot identify illicit holdings before they are presented for exchange.</p>
+</div>
+<div id="ass:cap" class="assumption">
+<p><strong>Assumption 2</strong> (Finite capacities). Audit capacity <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>, laundering capacity <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℓ</mi><annotation encoding="application/x-tex">\ell</annotation></semantics></math> and the replacement rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> are finite.</p>
+</div>
+<div id="ass:rat" class="assumption">
+<p><strong>Assumption 3</strong> (Rational holders). Each illicit holder chooses the channel that maximizes expected retained value; detection destroys a share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math> of the amount, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>π</mi><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\pi&gt;1</annotation></semantics></math> for criminal proceeds, which carry sanctions beyond confiscation.</p>
+</div>
+<div id="lem:gap" class="lemma">
+<p><strong>Lemma 1</strong> (Liquidity gap). <em>If legal tender lapses when a share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math> of the withdrawn currency has been replaced and replacement proceeds linearly at rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>, the cumulative shortfall is <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><msubsup><mo>∫</mo><mn>0</mn><mi>∞</mi></msubsup><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>R</mi><mn>0</mn></msub><mo>−</mo><mi>r</mi><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo></msup><mi>d</mi><mi>t</mi><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>R</mi><mn>0</mn></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><mi>r</mi></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+G=\int_0^\infty\left(1-R_0-rt\right)^{+}dt=\frac{(1-R_0)^2}{2r},
+\end{equation}</annotation></semantics></math><span class="eqn">(1)</span></span> and disruption is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mi>ϕ</mi><mspace width="0.167em"></mspace><mi>G</mi></mrow><annotation encoding="application/x-tex">D=\phi\,G</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><msub><mi>s</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">m</mi></mrow></msub><msub><mo>∑</mo><mi>h</mi></msub><msub><mi>w</mi><mi>h</mi></msub><msub><mi>d</mi><mi>h</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>g</mi><mi>h</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\phi=s_{\mathrm{dem}}\sum_h w_h d_h(1-g_h)</annotation></semantics></math> weights the shortfall by the demonetized share of currency and by the cash dependence <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>h</mi></msub><annotation encoding="application/x-tex">d_h</annotation></semantics></math> and digital readiness <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>h</mi></msub><annotation encoding="application/x-tex">g_h</annotation></semantics></math> of transactions in group <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math> with weight <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>h</mi></msub><annotation encoding="application/x-tex">w_h</annotation></semantics></math>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> The integrand is positive on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>R</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>r</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">[0,(1-R_0)/r)</annotation></semantics></math> and the integral of a linear function over that interval is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>R</mi><mn>0</mn></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>r</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-R_0)^2/(2r)</annotation></semantics></math>. ◻</p>
+</div>
+<div id="prop:notice" class="proposition">
+<p><strong>Proposition 1</strong> (Notice erodes the bite). <em>Suppose laundering weakly dominates the alternatives for every holder, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>ℓ</mi></msub><mi>π</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>−</mo><mi>p</mi><mi>π</mi><mo>,</mo><mspace width="0.167em"></mspace><mn>1</mn><mo>−</mo><mi>t</mi><mo>,</mo><mspace width="0.167em"></mspace><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">(1-f)(1-p_\ell\pi)\ge\max\{1-p\pi,\,1-t,\,0\}</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>ℓ</mi></msub><annotation encoding="application/x-tex">p_\ell</annotation></semantics></math> are the cost and detection probability of the laundering channel. If laundering capacity covers the illicit stock, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℓ</mi><mi>T</mi><mo>≥</mo><mi>S</mi></mrow><annotation encoding="application/x-tex">\ell T\ge S</annotation></semantics></math>, then no illicit unit is abandoned and the bite is bounded by the detection probability in laundering channels: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>≤</mo><msub><mi>p</mi><mi>ℓ</mi></msub></mrow><annotation encoding="application/x-tex">B\le p_\ell</annotation></semantics></math>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Under the stated inequality every holder weakly prefers laundering; with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℓ</mi><mi>T</mi><mo>≥</mo><mi>S</mi></mrow><annotation encoding="application/x-tex">\ell T\ge S</annotation></semantics></math> the capacity constraint never binds, so all units are laundered. Extinguishment is zero, and the captured share equals <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>ℓ</mi></msub><annotation encoding="application/x-tex">p_\ell</annotation></semantics></math> times the confiscated share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">{</mo><mi>π</mi><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo><mo>≤</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\min\{\pi,1\}\le 1</annotation></semantics></math>. ◻</p>
+</div>
+<div id="prop:congestion" class="proposition">
+<p><strong>Proposition 2</strong> (Congestion). <em>If <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>&lt;</mo><mi>K</mi><mi>/</mi><mi>A</mi></mrow><annotation encoding="application/x-tex">W&lt;K/A</annotation></semantics></math>, the audit probability <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>A</mi><mi>W</mi><mi>/</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">a(W)=AW/K</annotation></semantics></math> is strictly increasing in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>W</mi><annotation encoding="application/x-tex">W</annotation></semantics></math>. Shortening the window to deny laundering time therefore lowers the probability that a deposited unit is examined and raises the undetected share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>κ</mi><mi>q</mi><mi>A</mi><mi>W</mi><mi>/</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">1-\kappa qAW/K</annotation></semantics></math> of illicit value passing through the banking system.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Immediate from <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>A</mi><mi>W</mi><mi>/</mi><mi>K</mi><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a(W)=AW/K&lt;1</annotation></semantics></math>. ◻</p>
+</div>
+<div id="prop:trilemma" class="proposition">
+<p><strong>Proposition 3</strong> (Demonetization trilemma). <em>Fix thresholds <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo>&gt;</mo><msub><mi>p</mi><mi>ℓ</mi></msub></mrow><annotation encoding="application/x-tex">\bar b&gt;p_\ell</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\bar d&gt;0</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>λ</mi><mo accent="true">‾</mo></mover><mo>∈</mo><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\bar\lambda\in(0,1)</annotation></semantics></math>, and suppose that a positive share of illicit value passes through the banking system. Under Assumptions <a href="#ass:anon">1</a>–<a href="#ass:rat">3</a>, a design attains <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>≥</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">B\ge\bar b</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>≤</mo><mover><mi>d</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">D\le\bar d</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Λ</mi><mo>≤</mo><mover><mi>λ</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\Lambda\le\bar\lambda</annotation></semantics></math> only if <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">(i)</mtext><mspace width="0.278em"></mspace><mspace width="0.222em"></mspace><mi>ℓ</mi><mo stretchy="false" form="prefix">(</mo><mi>L</mi><mo>+</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>&lt;</mo><mi>S</mi><mo>,</mo><mspace width="2.0em"></mspace><mtext mathvariant="normal">(ii)</mtext><mspace width="0.278em"></mspace><mspace width="0.222em"></mspace><mi>κ</mi><mi>q</mi><mspace width="0.167em"></mspace><mfrac><mrow><mi>A</mi><mi>W</mi></mrow><mi>K</mi></mfrac><mo>≥</mo><mn>1</mn><mo>−</mo><mover><mi>λ</mi><mo accent="true">‾</mo></mover><mo>,</mo><mspace width="2.0em"></mspace><mtext mathvariant="normal">(iii)</mtext><mspace width="0.278em"></mspace><mspace width="0.222em"></mspace><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>R</mi><mn>0</mn></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><mi>r</mi></mrow></mfrac><mo>≤</mo><mfrac><mover><mi>d</mi><mo accent="true">‾</mo></mover><mi>ϕ</mi></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\text{(i)}\;\ \ell(L+W)&lt;S,\qquad \text{(ii)}\;\ \kappa q\,\frac{AW}{K}\ge 1-\bar\lambda,\qquad
+\text{(iii)}\;\ \frac{(1-R_0)^2}{2r}\le\frac{\bar d}{\phi}.
+\end{equation}</annotation></semantics></math><span class="eqn">(2)</span></span> Conditions (i) and (ii) are jointly feasible only if <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>&gt;</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>λ</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mi>ℓ</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>κ</mi><mi>q</mi><mi>s</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">A&gt;(1-\bar\lambda)\,\ell/(\kappa q s)</annotation></semantics></math>: audit capacity must exceed laundering throughput scaled by the inverse illicit share. Under a shock, condition (iii) requires <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mn>0</mn></msub><mo>≥</mo><mn>1</mn><mo>−</mo><msqrt><mrow><mn>2</mn><mi>r</mi><mover><mi>d</mi><mo accent="true">‾</mo></mover><mi>/</mi><mi>ϕ</mi></mrow></msqrt></mrow><annotation encoding="application/x-tex">R_0\ge 1-\sqrt{2r\bar d/\phi}</annotation></semantics></math>: replacement currency must be printed and distributed before the announcement. When either requirement fails, at most two of the three objectives can be met.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof sketch.</em> Condition (i) follows from Proposition <a href="#prop:notice">1</a>: if <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℓ</mi><mo stretchy="false" form="prefix">(</mo><mi>L</mi><mo>+</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mi>S</mi></mrow><annotation encoding="application/x-tex">\ell(L+W)\ge S</annotation></semantics></math> the bite cannot exceed <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>ℓ</mi></msub><mo>&lt;</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">p_\ell&lt;\bar b</annotation></semantics></math>. For illicit value passing through banks the undetected share is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>κ</mi><mi>q</mi><mspace width="0.167em"></mspace><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1-\kappa q\,a(W)</annotation></semantics></math>, so <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Λ</mi><mo>≤</mo><mover><mi>λ</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\Lambda\le\bar\lambda</annotation></semantics></math> requires <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>λ</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>κ</mi><mi>q</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">a(W)\ge(1-\bar\lambda)/(\kappa q)</annotation></semantics></math>, which with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>A</mi><mi>W</mi><mi>/</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">a(W)=AW/K</annotation></semantics></math> yields (ii). Combining (i), with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">L\ge0</annotation></semantics></math>, and (ii) gives <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>λ</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mi>K</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>κ</mi><mi>q</mi><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><mi>W</mi><mo>&lt;</mo><mi>s</mi><mi>K</mi><mi>/</mi><mi>ℓ</mi></mrow><annotation encoding="application/x-tex">(1-\bar\lambda)K/(\kappa qA)\le W&lt;sK/\ell</annotation></semantics></math>, which is non-empty only under the stated bound on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>. Condition (iii) follows from Lemma <a href="#lem:gap">1</a>. ◻</p>
+</div>
+<div class="remark">
+<p><em>Remark 1</em>. The trilemma concerns designs that rely on the exchange of notes to separate illicit from licit holdings. India’s 2016 design partly satisfied (i), but scrutiny of the deposit flood was necessarily ex post and partial, and replacement currency was far from sufficient; the predicted combination—low bite, high disruption, substantial legitimization—is what the episode delivered. A phase-out relaxes (ii) and (iii) at the price of (i); Figure <a href="#fig:trilemma">3</a> summarizes the three corners.</p>
+</div>
+<figure id="fig:trilemma" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/trilemma.svg" />
+<figcaption><b>Figure 3.</b> <strong>The demonetization trilemma: no design secures more than two of three goals.</strong> Each side of the triangle is a design that secures the goals at its two ends and sacrifices the goal at the opposite vertex (Proposition <a href="#prop:trilemma">3</a>). India 2016 aimed at the bite but lost both smoothness and integrity.</figcaption>
+</figure>
+<h2 data-number="3.2" id="testable-implications"><span class="header-section-number">3.2</span> Testable implications</h2>
+<div class="hypothesis">
+<p><strong>Hypothesis 1</strong> (Non-identification). Aggregate return rates do not identify <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℓ</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">\ell T</annotation></semantics></math> is large relative to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>.</p>
+</div>
+<div class="hypothesis">
+<p><strong>Hypothesis 2</strong> (Capacity). The bite is decreasing in laundering capacity; scrutiny has first-order effects on the bite only when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℓ</mi><mi>T</mi><mo>&lt;</mo><mi>S</mi></mrow><annotation encoding="application/x-tex">\ell T&lt;S</annotation></semantics></math>.</p>
+</div>
+<div class="hypothesis">
+<p><strong>Hypothesis 3</strong> (Denomination premium). If the 1,000-baht note is a preferred illicit medium, its share in seized cash exceeds its share in circulation.</p>
+</div>
+<div class="hypothesis">
+<p><strong>Hypothesis 4</strong> (Political money cycle). If vote buying relies on large notes, demand for 1,000-baht notes rises disproportionately before elections.</p>
+</div>
+<p>Hypotheses 1 and 2 are examined with the model in Section <a href="#sec:results">5</a>; Hypotheses 3 and 4 require new data and motivate the designs in Section <a href="#sec:agenda">7</a>.</p>
+<h1 data-number="4" id="sec:model"><span class="header-section-number">4</span> DemonetSim-TH: model and calibration</h1>
+<h2 data-number="4.1" id="structure"><span class="header-section-number">4.1</span> Structure</h2>
+<p>DemonetSim-TH is a partial-equilibrium Monte Carlo model with two modules. Uncertain parameters are drawn 600 times per scenario; each draw simulates six groups of honest holders and 1,500 illicit agents. Parameter ranges are reported in Appendix <a href="#app:model">A</a>.</p>
+<p><em>Honest holders.</em> Group <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math> holds share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>σ</mi><mi>h</mi></msub><annotation encoding="application/x-tex">\sigma_h</annotation></semantics></math> of the demonetized stock and has bank access <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>h</mi></msub><annotation encoding="application/x-tex">a_h</annotation></semantics></math>, digital readiness <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>h</mi></msub><annotation encoding="application/x-tex">g_h</annotation></semantics></math>, cash dependence <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>h</mi></msub><annotation encoding="application/x-tex">d_h</annotation></semantics></math> and transaction weight <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>h</mi></msub><annotation encoding="application/x-tex">w_h</annotation></semantics></math> (Table <a href="#tab:holders">10</a>). The share converted before the window closes is <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>h</mi></msub><mo>=</mo><mn>1</mn><mo>−</mo><mrow><mi mathvariant="normal">exp</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>−</mi><mfrac><mrow><msubsup><mi>a</mi><mi>h</mi><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">f</mi></mrow></msubsup><mi>W</mi></mrow><msub><mi>τ</mi><mn>0</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><msubsup><mi>a</mi><mi>h</mi><mrow><mi mathvariant="normal">e</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">f</mi></mrow></msubsup><mo>=</mo><msub><mi>a</mi><mi>h</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mn>1</mn><mo>−</mo><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><msub><mi>κ</mi><mi>b</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>a</mi><mi>h</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:conv}
+c_h=1-\exp\!\left(-\frac{a_h^{\mathrm{eff}}W}{\tau_0}\right),\qquad a_h^{\mathrm{eff}}=a_h\left[1-\tfrac12\kappa_b(1-a_h)\right],
+\end{equation}</annotation></semantics></math><span class="eqn">(3)</span></span> with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>0</mn></msub><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">\tau_0=4</annotation></semantics></math> days, so stricter documentation slows down holders with poor bank access. The disruption index applies Lemma <a href="#lem:gap">1</a>, <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mo>=</mo><mn>100</mn><mo>×</mo><mfrac><mrow><msub><mi>s</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">m</mi></mrow></msub><munder><mo>∑</mo><mi>h</mi></munder><msub><mi>w</mi><mi>h</mi></msub><msub><mi>d</mi><mi>h</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>g</mi><mi>h</mi></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mi>G</mi></mrow><msub><mover><mi>L</mi><mo accent="true">‾</mo></mover><mrow><mi mathvariant="normal">I</mi><mi mathvariant="normal">N</mi><mn mathvariant="normal">16</mn></mrow></msub></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:index}
+I=100\times\frac{s_{\mathrm{dem}}\sum_h w_h d_h(1-g_h)\,G}{\bar L_{\mathrm{IN16}}},
+\end{equation}</annotation></semantics></math><span class="eqn">(4)</span></span> where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mn>0</mn></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><msub><mover><mi>R</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo>+</mo><mi>r</mi><mi>W</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">R_0=\min\{1,\bar R_0+rW\}</annotation></semantics></math> if legal tender persists to the deadline, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">G=0</annotation></semantics></math> under a phase-out, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>L</mi><mo accent="true">‾</mo></mover><mrow><mi mathvariant="normal">I</mi><mi mathvariant="normal">N</mi><mn mathvariant="normal">16</mn></mrow></msub><annotation encoding="application/x-tex">\bar L_{\mathrm{IN16}}</annotation></semantics></math> is the mean disruption of the India prior draws.</p>
+<p><em>Illicit holders.</em> Holdings <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>i</mi></msub><annotation encoding="application/x-tex">x_i</annotation></semantics></math>, measured in units of the scrutiny threshold, are log-normal with parameters <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><mn>0.3</mn></mrow><annotation encoding="application/x-tex">\ln 0.3</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.8</mn><annotation encoding="application/x-tex">1.8</annotation></semantics></math>, so that a small number of large holders own most illicit value. A holder is “black” (criminal proceeds) with probability <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>, in which case detection costs <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>π</mi><mi>i</mi></msub><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>3</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\pi_i\sim U(1.5,3)</annotation></semantics></math> times the amount, or “grey” (undeclared legal income) with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>π</mi><mi>i</mi></msub><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><mn>0.6</mn><mo>,</mo><mn>0.9</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\pi_i\sim U(0.6,0.9)</annotation></semantics></math>; the state recovers <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">{</mo><msub><mi>π</mi><mi>i</mi></msub><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\min\{\pi_i,1\}</annotation></semantics></math>. Perceived risk is scaled by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mi>i</mi></msub><mo>∼</mo><mrow><mi mathvariant="normal">L</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0.4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho_i\sim\mathrm{LogNormal}(0,0.4)</annotation></semantics></math>. The values of the five channels are <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>V</mi><mi>i</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">p</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mn>1</mn><mo>−</mo><msubsup><mi>p</mi><mi>i</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">p</mi></mrow></msubsup><msub><mi>π</mi><mi>i</mi></msub><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>p</mi><mi>i</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">p</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><msub><mi>κ</mi><mi>b</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mi>−</mi><msub><mi>x</mi><mi>i</mi></msub></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>ρ</mi><mi>i</mi></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>V</mi><mi>i</mi><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>f</mi><mi>i</mi><mi>s</mi></msubsup><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>p</mi><mi>i</mi><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi></mrow></msubsup><msub><mi>π</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>p</mi><mi>i</mi><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><msub><mi>κ</mi><mi>b</mi></msub><mspace width="0.167em"></mspace><msub><mi>q</mi><mi>s</mi></msub><mspace width="0.167em"></mspace><msub><mi>ρ</mi><mi>i</mi></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>V</mi><mi>i</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">v</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>f</mi><mi>i</mi><mi>c</mi></msubsup><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>p</mi><mi>i</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">v</mi></mrow></msubsup><msub><mi>π</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>p</mi><mi>i</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">v</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><msub><mi>κ</mi><mi>d</mi></msub><mspace width="0.167em"></mspace><msub><mi>q</mi><mi>c</mi></msub><mspace width="0.167em"></mspace><msub><mi>ρ</mi><mi>i</mi></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>V</mi><mi>i</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">n</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mn>1</mn><mo>−</mo><mi>t</mi><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">grey holders only</mtext><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right; padding-right: 0"><msubsup><mi>V</mi><mi>i</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">n</mi></mrow></msubsup></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mn>0</mn><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:values}
+\begin{aligned}
+V_i^{\mathrm{dep}}&amp;=1-p_i^{\mathrm{dep}}\pi_i, &amp; p_i^{\mathrm{dep}}&amp;=\kappa_b\left(1-e^{-x_i}\right)\rho_i,\\
+V_i^{\mathrm{str}}&amp;=(1-f_i^{s})\left(1-p_i^{\mathrm{str}}\pi_i\right), &amp; p_i^{\mathrm{str}}&amp;=\kappa_b\,q_s\,\rho_i,\\
+V_i^{\mathrm{cnv}}&amp;=(1-f_i^{c})\left(1-p_i^{\mathrm{cnv}}\pi_i\right), &amp; p_i^{\mathrm{cnv}}&amp;=\kappa_d\,q_c\,\rho_i,\\
+V_i^{\mathrm{amn}}&amp;=1-t\ \ (\text{grey holders only}), &amp; V_i^{\mathrm{abn}}&amp;=0,
+\end{aligned}
+\end{equation}</annotation></semantics></math><span class="eqn">(5)</span></span> and holder <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> chooses <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>k</mi><mi>i</mi><mo>*</mo></msubsup><mo>=</mo><mrow><mi mathvariant="normal">arg</mi><mo>&#8289;</mo></mrow><msub><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mrow><mi>k</mi><mo>∈</mo><msub><mi>𝒜</mi><mi>i</mi></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>V</mi><mi>i</mi><mi>k</mi></msubsup><mo>+</mo><msub><mi>ε</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">k_i^*=\arg\max_{k\in\mathcal A_i}\left(V_i^k+\varepsilon_{ik}\right)</annotation></semantics></math> with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>∼</mo><mrow><mi mathvariant="normal">G</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">l</mi></mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0.02</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\varepsilon_{ik}\sim\mathrm{Gumbel}(0,0.02)</annotation></semantics></math> (<a href="#ref-mcfadden1974">McFadden, 1974</a>). Structuring and conversion are capacity-constrained: their capacities, expressed as shares of all demonetized cash over the operating period, are divided by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> to obtain capacities relative to illicit holdings. Agents are processed in random order, and those who find their preferred channel full fall back to their next-best option (Appendix Table <a href="#alg:alloc">12</a>). Detected deposits are captured or regularized after penalty; undetected deposits and structured deposits net of fees are <em>laundered</em>; conversions and fees are <em>displaced</em>; abandoned notes are <em>extinguished</em>. The bite is extinguished plus captured value, and the return rate is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>s</mi><mo>×</mo><mtext mathvariant="normal">extinguished</mtext><mo>−</mo><mtext mathvariant="normal">honest value not converted</mtext></mrow><annotation encoding="application/x-tex">1-s\times\text{extinguished}-\text{honest value not converted}</annotation></semantics></math>.</p>
+<h2 data-number="4.2" id="scenarios"><span class="header-section-number">4.2</span> Scenarios</h2>
+<p>Table <a href="#tab:scenarios">4</a> defines four Thai scenarios and the India calibration scenario. S2 captures the main Nigerian risk—insufficient replacement currency at the deadline—through a wide range for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>R</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><annotation encoding="application/x-tex">\bar R_0</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>; S4 adds a package of cash-payment caps, enhanced due diligence on gold, crypto and property purchases and a crackdown on mule accounts, modeled as higher detection and lower laundering capacity.</p>
+<div id="tab:scenarios">
+<div class="tbl"><p class="tcap"><b>Table 4.</b> Scenarios</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Code</th>
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: left;">Key features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">S1</td>
+<td style="text-align: left;">Shock (India-style)</td>
+<td style="text-align: left;">Legal tender lapses at once; 50-day window; amnesty at 50–60% tax</td>
+</tr>
+<tr>
+<td style="text-align: left;">S2</td>
+<td style="text-align: left;">Announced, 90-day deadline</td>
+<td style="text-align: left;">Usable until the deadline; no amnesty; outcome depends on printing enough 500-baht notes</td>
+</tr>
+<tr>
+<td style="text-align: left;">S3</td>
+<td style="text-align: left;">Phase-out, 5 years</td>
+<td style="text-align: left;">Issuance stops; legal tender for five years; redeemable at the central bank indefinitely</td>
+</tr>
+<tr>
+<td style="text-align: left;">S4</td>
+<td style="text-align: left;">Phase-out + AML package</td>
+<td style="text-align: left;">S3 plus cash-payment cap, enhanced due diligence on dealers, mule-account crackdown</td>
+</tr>
+<tr>
+<td style="text-align: left;">IN16</td>
+<td style="text-align: left;">India 2016 (calibration)</td>
+<td style="text-align: left;">Indian parameters; draws retained by ABC if the simulated return rate is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>99.3</mn><mo>±</mo><mn>0.3</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">99.3\pm0.3\%</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h2 data-number="4.3" id="calibration-and-sensitivity-analysis"><span class="header-section-number">4.3</span> Calibration and sensitivity analysis</h2>
+<p>We treat India 2016 as the calibration target. We draw 4,000 parameter vectors from the IN16 priors, simulate the return rate, and retain draws with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mover><mi>R</mi><mo accent="true">̂</mo></mover><mo>−</mo><mn>0.993</mn><mo stretchy="false" form="prefix">|</mo><mo>≤</mo><mn>0.003</mn></mrow><annotation encoding="application/x-tex">|\hat R-0.993|\le0.003</annotation></semantics></math> (<a href="#ref-beaumont2002">Beaumont et al., 2002</a>). Of the 4,000 draws, 1,214 (30.3 percent) are accepted. To understand which inputs drive the outcomes, we compute partial rank correlation coefficients (PRCC) between each of 13 sampled parameters and three outcomes across the 600 S1 draws (<a href="#ref-marino2008">Marino et al., 2008</a>). PRCCs measure the monotone association between an input and an outcome after removing the linear effects of all other inputs on the ranks; with 39 coefficients estimated from 600 draws, values below about 0.15 in absolute value are within sampling noise.</p>
+<h1 data-number="5" id="sec:results"><span class="header-section-number">5</span> Results</h1>
+<h2 data-number="5.1" id="bite-versus-disruption"><span class="header-section-number">5.1</span> Bite versus disruption</h2>
+<p>Table <a href="#tab:main">5</a> and Figure <a href="#fig:bite">4</a> report the central results. A Thai shock (S1) produces a disruption index of 17 against 97 for calibrated India—about one sixth—because the 1,000-baht note is a smaller share of currency and digital readiness is far higher. Incidence is nonetheless highly regressive: about 91 percent of the disruption falls on vulnerable households and informal businesses (81 percent in India). Honest holders fail to convert about 0.28 percent of the stock, roughly THB 3.9 billion, three quarters of it held across the border. S2 is benign at the median but reaches an index of about 10 in the worst decile of replacement outcomes, which is precisely the Nigerian failure mode.</p>
+<div id="tab:main">
+<div class="tbl"><p class="tcap"><b>Table 5.</b> Main simulation results</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Disruption index</th>
+<th style="text-align: left;">Bite (%)</th>
+<th style="text-align: left;">Laundered (%)</th>
+<th style="text-align: left;">Displaced (%)</th>
+<th style="text-align: left;">Return rate (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">IN16 (calibrated)</td>
+<td style="text-align: left;">96.8 [85.4, 113.2]</td>
+<td style="text-align: left;">8.5 [6.2, 12.0]</td>
+<td style="text-align: left;">60.2</td>
+<td style="text-align: left;">27.8</td>
+<td style="text-align: left;">99.50</td>
+</tr>
+<tr>
+<td style="text-align: left;">S1 Shock</td>
+<td style="text-align: left;">17.2 [13.2, 23.9]</td>
+<td style="text-align: left;">7.7 [5.5, 15.4]</td>
+<td style="text-align: left;">60.9</td>
+<td style="text-align: left;">25.2</td>
+<td style="text-align: left;">99.63</td>
+</tr>
+<tr>
+<td style="text-align: left;">S2 Announced, 90 days</td>
+<td style="text-align: left;">0.4 [0.0, 3.8]</td>
+<td style="text-align: left;">3.4 [2.7, 4.1]</td>
+<td style="text-align: left;">30.0</td>
+<td style="text-align: left;">65.5</td>
+<td style="text-align: left;">99.98</td>
+</tr>
+<tr>
+<td style="text-align: left;">S3 Phase-out</td>
+<td style="text-align: left;">0.0 [0.0, 0.0]</td>
+<td style="text-align: left;">1.0 [0.9, 1.2]</td>
+<td style="text-align: left;">52.9</td>
+<td style="text-align: left;">45.8</td>
+<td style="text-align: left;">100.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">S4 Phase-out + AML</td>
+<td style="text-align: left;">0.0 [0.0, 0.0]</td>
+<td style="text-align: left;">6.1 [4.8, 7.5]</td>
+<td style="text-align: left;">67.4</td>
+<td style="text-align: left;">24.7</td>
+<td style="text-align: left;">100.00</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p><em>Notes:</em> Medians with interquartile ranges in brackets over 600 draws per scenario (IN16: ABC-accepted draws). Laundered and displaced are means, in percent of the illicit stock. Bootstrap standard errors of the medians (1,000 resamples) are 0.25 pp for the S1 and IN16 bites, 0.09 pp for S4, and 0.42 for the S1 disruption index.</p>
+<figure id="fig:bite" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/bite.svg" />
+<figcaption><b>Figure 4.</b> <strong>A phase-out with AML measures bites nearly as hard as a shock at no liquidity cost.</strong> (a) Economic disruption, indexed to the mean India 2016 prior draw (= 100). (b) Share of illicit cash destroyed or seized. Dots are medians and bars interquartile ranges over 600 Monte Carlo draws per scenario; S4 is highlighted. Source: DemonetSim-TH, <code>scenario_summary.csv</code>.</figcaption>
+</figure>
+<p>The median bite of a shock is 7.7 percent; a phase-out combined with AML measures attains 6.1 percent at no liquidity cost. The comparison should not be over-read: S4’s bite stems from assumed improvements in detection that could be pursued without withdrawing the note. What the phase-out adds is to force the stock through that tighter net within a known horizon.</p>
+<h2 data-number="5.2" id="where-illicit-cash-goes"><span class="header-section-number">5.2</span> Where illicit cash goes</h2>
+<p>Figure <a href="#fig:fate">5</a> decomposes the fate of illicit cash. In every scenario most of it survives: between 30 and 67 percent enters the banking system undetected and between 25 and 65 percent is displaced into gold, foreign currency and crypto-assets or absorbed as fees by laundering intermediaries. Advance notice (S2) maximizes displacement, because notes remain spendable while holders buy alternative assets. Amnesty is almost never used (about 1 percent of illicit value): at 50–60 percent it is more expensive than laundering, which matches the weak take-up of India’s 2016 scheme. The distribution of the bite is right-skewed; in the best decile of draws a shock destroys or seizes more than 24 percent, which happens only when the illicit stock is large and laundering capacity scarce.</p>
+<figure id="fig:fate" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/fate.svg" />
+<figcaption><b>Figure 5.</b> <strong>Most illicit cash survives: only 1–11% is destroyed or seized in any scenario.</strong> Value-weighted means across draws, hence above the medians in Figure <a href="#fig:bite">4</a>. Blue segments are gains to the state; grey segments are illicit value that survives. The bite is the sum of extinguished and seized value. Source: DemonetSim-TH, <code>mc_results.csv</code>.</figcaption>
+</figure>
+<h2 data-number="5.3" id="sec:ident"><span class="header-section-number">5.3</span> What India’s return rate can and cannot tell us</h2>
+<p>Figure <a href="#fig:calib">6</a> plots the simulated return rate against the assumed illicit share for the India prior draws. The acceptance region overlaps the simulated distribution at every illicit share between 3 and 29 percent. Table <a href="#tab:abc">6</a> compares prior and posterior distributions: the posterior median of the illicit share (13.0 percent) barely differs from the prior (15.7 percent), and the 10–90 percent interval shrinks only from 4.8–27.1 to 4.2–25.9 percent. The return rate does trim the upper tail of the bite, from 23.8 to 15.9 percent at the 90th percentile. In short, the 99.3 percent statistic rules out large-scale extinguishment, but it is nearly uninformative about the illicit stock (Hypothesis 1).</p>
+<figure id="fig:calib" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/calib.svg" />
+<figcaption><b>Figure 6.</b> <strong>India’s 99.3% return rate fits any illicit share between 3% and 29%.</strong> Simulated return rates from 4,000 draws of the India priors, grouped by the assumed illicit share; the line is the median, the blue band the 10th–90th percentile range and the grey band the ABC acceptance region (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>99.3</mn><mo>±</mo><mn>0.3</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">99.3\pm0.3\%</annotation></semantics></math>). Sources: DemonetSim-TH, <code>india_calibration_curve.csv</code>; the target is from <a href="#ref-rbi2018">Reserve Bank of India (2018)</a>.</figcaption>
+</figure>
+<div id="tab:abc">
+<div class="tbl"><p class="tcap"><b>Table 6.</b> Approximate Bayesian computation: prior versus posterior</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Quantity (%)</th>
+<th style="text-align: center;">Prior: median [p10, p90]</th>
+<th style="text-align: center;">Posterior: median [p10, p90]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Illicit share of demonetized cash, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></td>
+<td style="text-align: center;">15.7 [4.8, 27.1]</td>
+<td style="text-align: center;">13.0 [4.2, 25.9]</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bite</td>
+<td style="text-align: center;">9.3 [5.0, 23.8]</td>
+<td style="text-align: center;">8.5 [4.7, 15.9]</td>
+</tr>
+<tr>
+<td style="text-align: left;">Laundered undetected</td>
+<td style="text-align: center;">61.8 [46.9, 73.9]</td>
+<td style="text-align: center;">62.0 [46.1, 72.8]</td>
+</tr>
+<tr>
+<td style="text-align: left;">Displaced</td>
+<td style="text-align: center;">22.0 [12.6, 39.6]</td>
+<td style="text-align: center;">25.0 [14.3, 44.2]</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p><em>Notes:</em> 4,000 prior draws; 1,214 accepted with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mover><mi>R</mi><mo accent="true">̂</mo></mover><mo>−</mo><mn>0.993</mn><mo stretchy="false" form="prefix">|</mo><mo>≤</mo><mn>0.003</mn></mrow><annotation encoding="application/x-tex">|\hat R-0.993|\le0.003</annotation></semantics></math>.</p>
+<h2 data-number="5.4" id="the-binding-constraint-laundering-capacity"><span class="header-section-number">5.4</span> The binding constraint: laundering capacity</h2>
+<p>Figure <a href="#fig:capacity">7</a> fixes the illicit share at 10 percent and varies laundering capacity. When the laundering network can absorb only 1 percent of demonetized cash during the window, stricter scrutiny raises the bite from 18 to 41 percent. Once capacity exceeds about 7.5 percent—roughly the illicit stock net of conversion capacity—the bite falls to 5–7 percent irrespective of scrutiny, as Proposition <a href="#prop:notice">1</a> predicts (Hypothesis 2). Disrupting mule networks, cash purchases of gold and peer-to-peer crypto markets is therefore a precondition for, not a complement to, any design that aims at the stock.</p>
+<figure id="fig:capacity" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/capacity.svg" />
+<figcaption><b>Figure 7.</b> <strong>Once laundering capacity exceeds the illicit stock, scrutiny barely matters.</strong> Bite in scenario S1 as a function of laundering capacity over the exchange window, for three levels of bank scrutiny, with the illicit share fixed at 10%; medians of 80 draws per point. The dashed line marks capacity equal to the illicit stock. Source: DemonetSim-TH, <code>sensitivity_s1.csv</code>.</figcaption>
+</figure>
+<h2 data-number="5.5" id="global-sensitivity"><span class="header-section-number">5.5</span> Global sensitivity</h2>
+<p>Figure <a href="#fig:prcc">8</a> reports PRCCs for the shock scenario. The bite is governed by the ratio of the illicit stock to laundering capacity: the illicit share and structuring capacity have PRCCs of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.73</mn></mrow><annotation encoding="application/x-tex">+0.73</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.73</mn></mrow><annotation encoding="application/x-tex">-0.73</annotation></semantics></math>; the detectability of structured deposits (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.33</mn></mrow><annotation encoding="application/x-tex">+0.33</annotation></semantics></math>) and the costs of structuring and conversion (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.22</mn></mrow><annotation encoding="application/x-tex">+0.22</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.20</mn></mrow><annotation encoding="application/x-tex">+0.20</annotation></semantics></math>) follow, while bank scrutiny intensity has a coefficient of only <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.13</mn></mrow><annotation encoding="application/x-tex">+0.13</annotation></semantics></math>. The laundering share responds to capacity (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.71</mn></mrow><annotation encoding="application/x-tex">+0.71</annotation></semantics></math>), fees (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.54</mn></mrow><annotation encoding="application/x-tex">-0.54</annotation></semantics></math>) and scrutiny (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.44</mn></mrow><annotation encoding="application/x-tex">-0.44</annotation></semantics></math>): scrutiny matters for integrity far more than for bite. Disruption depends almost exclusively on the replacement rate (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.97</mn></mrow><annotation encoding="application/x-tex">-0.97</annotation></semantics></math>) and on currency ready on day zero (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.87</mn></mrow><annotation encoding="application/x-tex">-0.87</annotation></semantics></math>). The levers of bite and disruption are thus disjoint, consistent with Lemma <a href="#lem:gap">1</a> and Proposition <a href="#prop:trilemma">3</a>.</p>
+<figure id="fig:prcc" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/prcc.svg" />
+<figcaption><b>Figure 8.</b> <strong>Bite hinges on laundering capacity; disruption hinges on replacement logistics.</strong> Partial rank correlation coefficients between each sampled parameter and (a) the bite, (b) the share laundered undetected and (c) the disruption index, across 600 draws of scenario S1 (<a href="#ref-marino2008">Marino et al., 2008</a>). Blue bars mark <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">R</mi><mi mathvariant="normal">C</mi><mi mathvariant="normal">C</mi></mrow><mo stretchy="false" form="prefix">|</mo><mo>≥</mo><mn>0.3</mn></mrow><annotation encoding="application/x-tex">|\mathrm{PRCC}|\ge0.3</annotation></semantics></math>; values below about 0.15 in absolute value are within sampling noise. Source: DemonetSim-TH, <code>prcc_s1.json</code>.</figcaption>
+</figure>
+<h2 data-number="5.6" id="operating-costs"><span class="header-section-number">5.6</span> Operating costs</h2>
+<p>Table <a href="#tab:costs">7</a> reports the operating costs of replacing the note. Together they amount to less than 0.1 percent of GDP. The real costs of the policy are the disruption, its incidence and the risk to confidence in the baht, not printing.</p>
+<div id="tab:costs">
+<div class="tbl"><p class="tcap"><b>Table 7.</b> Operating costs of replacing the 1,000-baht note</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Item</th>
+<th style="text-align: center;">Median</th>
+<th style="text-align: center;">5th–95th percentile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1,000-baht notes withdrawn (billion)</td>
+<td style="text-align: center;">1.37</td>
+<td style="text-align: center;">1.19–1.58</td>
+</tr>
+<tr>
+<td style="text-align: left;">500- and 100-baht notes printed (billion)</td>
+<td style="text-align: center;">2.27</td>
+<td style="text-align: center;">1.76–2.83</td>
+</tr>
+<tr>
+<td style="text-align: left;">Initial printing cost (THB billion)</td>
+<td style="text-align: center;">5.7</td>
+<td style="text-align: center;">3.6–8.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Additional annual printing cost (THB billion)</td>
+<td style="text-align: center;">0.8</td>
+<td style="text-align: center;">0.2–1.7</td>
+</tr>
+<tr>
+<td style="text-align: left;">Seigniorage shifted per year (THB billion)</td>
+<td style="text-align: center;">9.1</td>
+<td style="text-align: center;">5.3–14.6</td>
+</tr>
+<tr>
+<td style="text-align: left;">One-off ATM reconfiguration (THB billion)</td>
+<td style="text-align: center;">0.3</td>
+<td style="text-align: center;">0.1–0.5</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p><em>Notes:</em> 5,000 Monte Carlo draws over assumed ranges of currency in circulation, the 1,000-baht share, demand migration, unit printing costs, note lifetimes and interest rates.</p>
+<h1 data-number="6" id="sec:policy"><span class="header-section-number">6</span> Assessment and policy design</h1>
+<h2 data-number="6.1" id="costs-and-benefits"><span class="header-section-number">6.1</span> Costs and benefits</h2>
+<p>Figure <a href="#fig:evidence">9</a> and Table <a href="#tab:proscons">8</a> position each claimed benefit and cost by impact and strength of evidence. The largest costs—disruption of the informal economy and its regressive incidence—rest on strong evidence; every benefit is either small or weakly evidenced. The strongest argument in favor of withdrawal is dynamic: without large notes, bribery and hoarding become costlier every year, and societies may grow accustomed to traceable payments (<a href="#ref-rogoff2016">Rogoff, 2016</a>; <a href="#ref-sands2016">Sands et al., 2016</a>). These flow effects lie outside the model and are a priority for research.</p>
+<figure id="fig:evidence" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/evidence.svg" />
+<figcaption><b>Figure 9.</b> <strong>The largest costs are well evidenced; every benefit is small or weakly evidenced.</strong> Benefits (green) and costs (red) positioned by impact and strength of evidence; the shaded cell is the most worrying corner. Author’s qualitative assessment, detailed in Table <a href="#tab:proscons">8</a>.</figcaption>
+</figure>
+<div id="tab:proscons">
+<div class="tbl"><p class="tcap"><b>Table 8.</b> Benefits and costs of withdrawal (author’s assessment)</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Item</th>
+<th style="text-align: left;">Impact</th>
+<th style="text-align: left;">Evidence</th>
+<th style="text-align: left;">Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="4" style="text-align: left;"><em>Costs</em></td>
+</tr>
+<tr>
+<td style="text-align: left;">Informal economy disrupted (shock)</td>
+<td style="text-align: left;">Large</td>
+<td style="text-align: left;">Strong</td>
+<td style="text-align: left;"><a href="#ref-chodorowreich2020">Chodorow-Reich et al. (2020)</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Burden on vulnerable groups</td>
+<td style="text-align: left;">Large</td>
+<td style="text-align: left;">Strong</td>
+<td style="text-align: left;">India evidence; about 90% of simulated disruption</td>
+</tr>
+<tr>
+<td style="text-align: left;">Trust and political risk</td>
+<td style="text-align: left;">Large</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;">Myanmar 1987, Soviet Union 1991, Venezuela 2016, Nigeria 2023</td>
+</tr>
+<tr>
+<td style="text-align: left;">Laundering via the exchange</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;">30–67% of illicit cash enters banks undetected (model)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Displacement to gold, FX, crypto</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;">25–65% displaced (model)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Legal risk</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;">Indian (4–1) and Nigerian Supreme Court rulings</td>
+</tr>
+<tr>
+<td style="text-align: left;">Printing and seigniorage</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;">About THB 6 billion once and THB 10 billion a year</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cross-border baht holders</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Weak</td>
+<td style="text-align: left;">No data</td>
+</tr>
+<tr>
+<td colspan="4" style="text-align: left;"><em>Benefits</em></td>
+</tr>
+<tr>
+<td style="text-align: left;">Broader tax base</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Weak</td>
+<td style="text-align: left;">Indian filings rose, confounded by the GST</td>
+</tr>
+<tr>
+<td style="text-align: left;">Intelligence from exchanges</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Weak</td>
+<td style="text-align: left;">Depends on analytical capacity</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bite on illicit cash</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Strong</td>
+<td style="text-align: left;">99.3% returned in India; 1–11% in the model</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bulk cash harder to move</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;">10 to 19 kg per THB 10 million</td>
+</tr>
+<tr>
+<td style="text-align: left;">Push to banks and digital payments</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Moderate</td>
+<td style="text-align: left;"><a href="#ref-crouzet2023">Crouzet et al. (2023)</a>; Thailand already highly digital</td>
+</tr>
+<tr>
+<td style="text-align: left;">Deterrence signal</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Weak</td>
+<td style="text-align: left;">No systematic evidence</td>
+</tr>
+<tr>
+<td style="text-align: left;">Less vote buying</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Weak</td>
+<td style="text-align: left;">Payments small; substitution to 500s and in-kind gifts</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h2 data-number="6.2" id="comparative-evaluation"><span class="header-section-number">6.2</span> Comparative evaluation</h2>
+<p>Figure <a href="#fig:scorecard">10</a> scores five options against seven criteria. With equal weights the shock design scores lowest (1.7 of 5) and the AML-based options highest (3.7–3.9). Doubling the weight on the bite makes the phase-out with AML (C+) the top option; even with a fivefold weight on the bite, the shock design remains last. Because the scores are judgments, the ranking should be read as a structured summary of the preceding evidence rather than as an independent result.</p>
+<figure id="fig:scorecard" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/scorecard.svg" />
+<figcaption><b>Figure 10.</b> <strong>The shock design scores lowest; AML-based options score highest.</strong> Author’s scores from 1 (poor, red) to 5 (good, green) for five options against seven criteria; legal risk includes political risk, and the mean weights criteria equally. Options C and C+ phase out the 1,000-baht note; option D retains it.</figcaption>
+</figure>
+<h2 data-number="6.3" id="a-gated-phase-out"><span class="header-section-number">6.3</span> A gated phase-out</h2>
+<p>If the note is to be withdrawn, Figure <a href="#fig:roadmap">11</a> outlines a five-year phase-out with three decision gates at which the process can be paused or reversed; reversal remains possible because the note stays legal tender until the final phase. Five preconditions should be met before the first gate: (1) evidence that the note carries a premium in illicit use (Section <a href="#sec:agenda">7</a>); (2) a demonstrable reduction in laundering capacity—mule accounts, cash purchases of gold, peer-to-peer crypto markets and nominee structures; (3) adequate stocks of 500-baht notes and reconfigured ATMs; (4) a statutory basis and exchange channels for the elderly, rural residents and holders in neighboring countries; and (5) an independent evaluation plan with monthly open data by denomination. Four designs should be avoided: surprise announcements; per-person exchange caps low enough to strand honest holders; simultaneous redesigns that create shortages; and amnesties priced above market laundering fees, which attract almost no declarations.</p>
+<figure id="fig:roadmap" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/roadmap.svg" />
+<figcaption><b>Figure 11.</b> <strong>A gated five-year phase-out.</strong> Phases are not drawn to scale. The blue frame marks what can start immediately; diamonds mark decision gates at which the process is paused or reversed if the criterion is not met. Author’s proposal.</figcaption>
+</figure>
+<h1 data-number="7" id="sec:agenda"><span class="header-section-number">7</span> A research agenda</h1>
+<p>Fifteen research topics follow from the analysis (Table <a href="#tab:agenda">9</a> and Figure <a href="#fig:agenda">12</a>). Three flagship studies address the premise of the policy directly and are described in detail below.</p>
+<div id="tab:agenda">
+<div class="tbl"><p class="tcap"><b>Table 9.</b> Research agenda</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Topic</th>
+<th style="text-align: left;">Question</th>
+<th style="text-align: left;">Design and data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">Who holds 1,000s</td>
+<td style="text-align: left;">How much demand reflects transactions, hoarding or the informal economy?</td>
+<td style="text-align: left;">Cash-demand models (ARDL), note return frequencies; BOT data</td>
+</tr>
+<tr>
+<td style="text-align: left;">A2</td>
+<td style="text-align: left;">Shadow economy</td>
+<td style="text-align: left;">How has the shadow economy changed with digital payments?</td>
+<td style="text-align: left;">MIMIC and currency-demand approaches (<a href="#ref-tanzi1983">Tanzi, 1983</a>; <a href="#ref-medina2018">Medina and Schneider, 2018</a>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">A3<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>⋆</mo></msup><annotation encoding="application/x-tex">^\star</annotation></semantics></math></td>
+<td style="text-align: left;">Pre-election cash</td>
+<td style="text-align: left;">Does demand for 1,000s and 500s rise before elections?</td>
+<td style="text-align: left;">Local projections, placebo dates; monthly data by denomination</td>
+</tr>
+<tr>
+<td style="text-align: left;">B1</td>
+<td style="text-align: left;">Cross-country</td>
+<td style="text-align: left;">Which conditions make demonetization succeed or fail?</td>
+<td style="text-align: left;">fsQCA (<a href="#ref-ragin2008">Ragin, 2008</a>); synthetic control (<a href="#ref-abadie2010">Abadie et al., 2010</a>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2</td>
+<td style="text-align: left;">Symbolic politics</td>
+<td style="text-align: left;">Why choose low-yield, high-salience instruments?</td>
+<td style="text-align: left;">Discourse and voting analysis</td>
+</tr>
+<tr>
+<td style="text-align: left;">C1</td>
+<td style="text-align: left;">Distributional costs</td>
+<td style="text-align: left;">Who bears the costs, and how much?</td>
+<td style="text-align: left;">Microsimulation; household surveys</td>
+</tr>
+<tr>
+<td style="text-align: left;">C2</td>
+<td style="text-align: left;">Public acceptance</td>
+<td style="text-align: left;">Which designs do citizens accept?</td>
+<td style="text-align: left;">Conjoint experiment (<a href="#ref-hainmueller2014">Hainmueller et al., 2014</a>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">C3</td>
+<td style="text-align: left;">Cross-border baht</td>
+<td style="text-align: left;">How much baht is held in Lao PDR, Cambodia, Myanmar?</td>
+<td style="text-align: left;">Border-market surveys</td>
+</tr>
+<tr>
+<td style="text-align: left;">D1<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>⋆</mo></msup><annotation encoding="application/x-tex">^\star</annotation></semantics></math></td>
+<td style="text-align: left;">Seized-cash premium</td>
+<td style="text-align: left;">Is the 1,000’s share in seized cash above its circulation share?</td>
+<td style="text-align: left;">Content analysis of judgments and seizure reports</td>
+</tr>
+<tr>
+<td style="text-align: left;">D2</td>
+<td style="text-align: left;">Vote-buying modes</td>
+<td style="text-align: left;">Which notes, transfers or goods buy votes?</td>
+<td style="text-align: left;">List experiment (<a href="#ref-blair2012">Blair and Imai, 2012</a>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">D3</td>
+<td style="text-align: left;">Displacement and mules</td>
+<td style="text-align: left;">What is the laundering capacity of mule networks?</td>
+<td style="text-align: left;">Network and on-chain analysis; partnership data</td>
+</tr>
+<tr>
+<td style="text-align: left;">E1</td>
+<td style="text-align: left;">Legal authority</td>
+<td style="text-align: left;">Secondary legislation or an Act of Parliament?</td>
+<td style="text-align: left;">Comparative law; proportionality</td>
+</tr>
+<tr>
+<td style="text-align: left;">E2</td>
+<td style="text-align: left;">Cash caps</td>
+<td style="text-align: left;">Do cash-payment caps shrink the shadow economy?</td>
+<td style="text-align: left;">Natural experiments from Italian caps</td>
+</tr>
+<tr>
+<td style="text-align: left;">F1<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>⋆</mo></msup><annotation encoding="application/x-tex">^\star</annotation></semantics></math></td>
+<td style="text-align: left;">E-payment bunching</td>
+<td style="text-align: left;">Do merchants stay below reporting thresholds and revert to cash?</td>
+<td style="text-align: left;">Bunching estimation (<a href="#ref-saez2010">Saez, 2010</a>; <a href="#ref-kleven2016">Kleven, 2016</a>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">F2</td>
+<td style="text-align: left;">Model extensions</td>
+<td style="text-align: left;">Does the trilemma survive richer models?</td>
+<td style="text-align: left;">ABM, heterogeneous-agent and game-theoretic models</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<figure id="fig:agenda" data-latex-placement="!htbp">
+<img loading="lazy" src="figs_en/agenda.svg" />
+<figcaption><b>Figure 12.</b> <strong>Three flagship studies offer high policy value, and two can start with open data.</strong> Fifteen research topics positioned by policy value and data feasibility; stars mark flagship studies and the shaded cell the topics to start with. Author’s assessment; see Table <a href="#tab:agenda">9</a>.</figcaption>
+</figure>
+<h2 data-number="7.1" id="d1-an-illicit-denomination-premium"><span class="header-section-number">7.1</span> D1: an illicit denomination premium</h2>
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>c</mi></msub><annotation encoding="application/x-tex">y_c</annotation></semantics></math> be the value share of 1,000-baht notes in the cash seized in case <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>π</mi><mi>t</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">c</mi></mrow></msubsup><annotation encoding="application/x-tex">\pi^{\mathrm{circ}}_{t}</annotation></semantics></math> the share of the note in circulation at the seizure date <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo stretchy="false" form="prefix">(</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">t(c)</annotation></semantics></math>. The estimand is the premium by crime type, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>k</mi></msub><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>y</mi><mi>c</mi></msub><mo>∣</mo><mi>k</mi><mo stretchy="false" form="prefix">(</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>k</mi><mo stretchy="false" form="postfix">]</mo><mo>−</mo><msubsup><mi>π</mi><mrow><mi>t</mi><mo stretchy="false" form="prefix">(</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">c</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">\theta_k=E[y_c\mid k(c)=k]-\pi^{\mathrm{circ}}_{t(c)}</annotation></semantics></math>. We propose a fractional logit (<a href="#ref-papke1996">Papke and Wooldridge, 1996</a>), <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>y</mi><mi>c</mi></msub><mo>∣</mo><msub><mi>X</mi><mi>c</mi></msub><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mi mathvariant="normal">Λ</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>+</mo><munder><mo>∑</mo><mi>k</mi></munder><msub><mi>β</mi><mi>k</mi></msub><mspace width="0.167em"></mspace><mn>𝟏</mn><mo stretchy="false" form="prefix">{</mo><mi>k</mi><mo stretchy="false" form="prefix">(</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>k</mi><mo stretchy="false" form="postfix">}</mo><mo>+</mo><msub><mi>γ</mi><mrow><mi>t</mi><mo stretchy="false" form="prefix">(</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>+</mo><msup><mi>δ</mi><mo>′</mo></msup><msub><mi>Z</mi><mi>c</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+E[y_c\mid X_c]=\Lambda\!\left(\alpha+\textstyle\sum_k\beta_k\,\mathbf 1\{k(c)=k\}+\gamma_{t(c)}+\delta&#39; Z_c\right),
+\end{equation}</annotation></semantics></math><span class="eqn">(6)</span></span> estimated on a sample of 300 to 1,000 judgments and seizure reports that record denominations, with region and enforcement-channel controls <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Z</mi><mi>c</mi></msub><annotation encoding="application/x-tex">Z_c</annotation></semantics></math>. Hypothesis 3 predicts <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>k</mi></msub><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\theta_k&gt;0</annotation></semantics></math> for bribery and wholesale narcotics. The main threat is selection into detection; reporting estimates separately by detection channel and bounding the premium under alternative selection assumptions mitigates it. A premium indistinguishable from zero would remove the empirical premise of the policy.</p>
+<h2 data-number="7.2" id="a3-a-political-money-cycle"><span class="header-section-number">7.2</span> A3: a political money cycle</h2>
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>C</mi><mi>t</mi><mi>d</mi></msubsup><annotation encoding="application/x-tex">C^d_t</annotation></semantics></math> be notes in circulation of denomination <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>100</mn><mo>,</mo><mn>500</mn><mo>,</mo><mn>1000</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">d\in\{100,500,1000\}</annotation></semantics></math> in month <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>. Local projections (<a href="#ref-jorda2005">Jordà, 2005</a>), <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><msubsup><mi>C</mi><mrow><mi>t</mi><mo>+</mo><mi>h</mi></mrow><mi>d</mi></msubsup><mo>−</mo><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><msubsup><mi>C</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mi>d</mi></msubsup><mo>=</mo><msubsup><mi>α</mi><mi>h</mi><mi>d</mi></msubsup><mo>+</mo><msubsup><mi>β</mi><mi>h</mi><mi>d</mi></msubsup><msub><mi>E</mi><mi>t</mi></msub><mo>+</mo><msubsup><mi mathvariant="normal">Γ</mi><mi>h</mi><mrow><mi>d</mi><mi>′</mi></mrow></msubsup><msub><mi>X</mi><mi>t</mi></msub><mo>+</mo><msubsup><mi>ε</mi><mrow><mi>t</mi><mo>+</mo><mi>h</mi></mrow><mi>d</mi></msubsup><mo>,</mo><mspace width="2.0em"></mspace><mi>h</mi><mo>=</mo><mn>0</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>H</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\ln C^d_{t+h}-\ln C^d_{t-1}=\alpha^d_h+\beta^d_h E_t+\Gamma^{d\prime}_h X_t+\varepsilon^d_{t+h},\qquad h=0,\dots,H,
+\end{equation}</annotation></semantics></math><span class="eqn">(7)</span></span> trace the response to the pre-election period <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>E</mi><mi>t</mi></msub><annotation encoding="application/x-tex">E_t</annotation></semantics></math>, controlling for New Year, Chinese New Year and Songkran, the policy rate and lags, and checked against placebo dates. With regional data, a difference-in-differences design interacts the pre-election period with electoral competitiveness. If <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>β</mi><mi>h</mi><mn>500</mn></msubsup><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\beta^{500}_h&gt;0</annotation></semantics></math> while <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>β</mi><mi>h</mi><mn>1000</mn></msubsup><mo>≈</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\beta^{1000}_h\approx0</annotation></semantics></math>, vote buying runs on smaller notes and withdrawing the 1,000-baht note is mis-targeted (Hypothesis 4).</p>
+<h2 data-number="7.3" id="f1-bunching-at-e-payment-reporting-thresholds"><span class="header-section-number">7.3</span> F1: bunching at e-payment reporting thresholds</h2>
+<p>Financial institutions report accounts that receive at least 3,000 electronic transfers a year, or at least 400 transfers totaling THB 2 million (thresholds to be verified). If merchants avoid reporting by steering customers to cash, the distribution of annual transfer counts will exhibit excess mass below the thresholds. Following <a href="#ref-saez2010">Saez (2010)</a>, <a href="#ref-kleven2013">Kleven and Waseem (2013)</a> and <a href="#ref-kleven2016">Kleven (2016)</a>, the normalized excess mass is <span class="eq"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>b</mi><mo accent="true">̂</mo></mover><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><msub><mi>z</mi><mi>L</mi></msub></mrow><mi>z</mi></munderover><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mi>j</mi></msub><mo>−</mo><msub><mover><mi>n</mi><mo accent="true">̂</mo></mover><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mover><mi>n</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\hat b=\frac{\sum_{j=z_L}^{z}\left(n_j-\hat n_j\right)}{\hat n(z)},
+\end{equation}</annotation></semantics></math><span class="eqn">(8)</span></span> where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>j</mi></msub><annotation encoding="application/x-tex">n_j</annotation></semantics></math> is the number of accounts in bin <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>n</mi><mo accent="true">̂</mo></mover><mi>j</mi></msub><annotation encoding="application/x-tex">\hat n_j</annotation></semantics></math> the counterfactual from a polynomial fitted outside the excluded window <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><msub><mi>z</mi><mi>L</mi></msub><mo>,</mo><msub><mi>z</mi><mi>U</mi></msub><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[z_L,z_U]</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>n</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat n(z)</annotation></semantics></math> the counterfactual density at the threshold <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>. Evidence of bunching would indicate that tax-reporting rules push merchants back to cash, so currency and tax policy must be designed jointly.</p>
+<h1 data-number="8" id="sec:limits"><span class="header-section-number">8</span> Limitations</h1>
+<p>Five limitations qualify the results. First, the Thai statistics are approximations that have not been verified against primary sources. Second, the model is partial-equilibrium: it omits general-equilibrium feedbacks, dynamic responses of the central bank and the long-run flow effects of retiring large notes, which are the strongest argument in favor of withdrawal. Third, the illicit share is unknown; we therefore report results as distributions over wide priors, and the India calibration shows that available aggregate data cannot narrow it. Fourth, detection is modeled in reduced form; in particular, the compliance costs of the AML package in S4 for honest users are not quantified. Fifth, the scorecard and the evidence map are qualitative judgments, and external validity of a calibration to India rests on the assumption that laundering technologies are broadly similar.</p>
+<h1 data-number="9" id="sec:conclusion"><span class="header-section-number">9</span> Conclusion</h1>
+<p>A shock withdrawal of the 1,000-baht note would likely do more harm than good: in the calibrated model it destroys or seizes about 8 percent of illicit cash, concentrates about 90 percent of the disruption on vulnerable groups and turns the exchange into a large-scale laundering channel. The note is not a large denomination by international standards, and Thailand’s grey capital increasingly moves through digital channels. The binding constraint on any design is the capacity of laundering networks, which points to mule accounts, cash purchases of gold, peer-to-peer crypto markets and nominee structures as the more promising targets, together with caps on cash payments. If withdrawal is nonetheless pursued, a gated five-year phase-out preceded by the three flagship studies would test the premise before the costs are incurred.</p>
+<h1 class="unnumbered" id="references">References</h1>
+<div id="ref-abadie2010">
+
+</div>
+<p>Abadie, A., Diamond, A., and Hainmueller, J. (2010). Synthetic control methods for comparative case studies. <em>Journal of the American Statistical Association</em>, 105(490):493–505.</p>
+<div id="ref-bot">
+
+</div>
+<p>Bank of Thailand (various years). Banknotes in circulation by denomination; Payment Systems Report. Bangkok.</p>
+<div id="ref-beaumont2002">
+
+</div>
+<p>Beaumont, M. A., Zhang, W., and Balding, D. J. (2002). Approximate Bayesian computation in population genetics. <em>Genetics</em>, 162(4):2025–2035.</p>
+<div id="ref-bech2018">
+
+</div>
+<p>Bech, M., Faruqui, U., Ougaard, F., and Picillo, C. (2018). Payments are a-changin’ but cash still rules. <em>BIS Quarterly Review</em>, March.</p>
+<div id="ref-becker1968">
+
+</div>
+<p>Becker, G. S. (1968). Crime and punishment: An economic approach. <em>Journal of Political Economy</em>, 76(2):169–217.</p>
+<div id="ref-blair2012">
+
+</div>
+<p>Blair, G. and Imai, K. (2012). Statistical analysis of list experiments. <em>Political Analysis</em>, 20(1):47–77.</p>
+<div id="ref-chodorowreich2020">
+
+</div>
+<p>Chodorow-Reich, G., Gopinath, G., Mishra, P., and Narayanan, A. (2020). Cash and the economy: Evidence from India’s demonetization. <em>Quarterly Journal of Economics</em>, 135(1):57–103.</p>
+<div id="ref-crouzet2023">
+
+</div>
+<p>Crouzet, N., Gupta, A., and Mezzanotti, F. (2023). Shocks and technology adoption: Evidence from electronic payment systems. <em>Journal of Political Economy</em>, 131(11).</p>
+<div id="ref-ecb2016">
+
+</div>
+<p>European Central Bank (2016). ECB ends production and issuance of EUR 500 banknote. Press release, 4 May.</p>
+<div id="ref-amlr2024">
+
+</div>
+<p>European Union (2024). Regulation (EU) 2024/1624 on the prevention of the use of the financial system for the purposes of money laundering or terrorist financing.</p>
+<div id="ref-europol2015">
+
+</div>
+<p>Europol (2015). <em>Why Is Cash Still King? A Strategic Report on the Use of Cash by Criminal Groups as a Facilitator for Money Laundering</em>. The Hague.</p>
+<div id="ref-fatf2017">
+
+</div>
+<p>FATF and APG (2017). <em>Anti-Money Laundering and Counter-Terrorist Financing Measures—Thailand: Mutual Evaluation Report</em>.</p>
+<div id="ref-hainmueller2014">
+
+</div>
+<p>Hainmueller, J., Hopkins, D. J., and Yamamoto, T. (2014). Causal inference in conjoint analysis. <em>Political Analysis</em>, 22(1):1–30.</p>
+<div id="ref-jobst2017">
+
+</div>
+<p>Jobst, C. and Stix, H. (2017). Is cash back? Assessing the recent increase in cash demand. SUERF Policy Note 19.</p>
+<div id="ref-jorda2005">
+
+</div>
+<p>Jordà, Ò. (2005). Estimation and inference of impulse responses by local projections. <em>American Economic Review</em>, 95(1):161–182.</p>
+<div id="ref-kleven2016">
+
+</div>
+<p>Kleven, H. J. (2016). Bunching. <em>Annual Review of Economics</em>, 8:435–464.</p>
+<div id="ref-kleven2013">
+
+</div>
+<p>Kleven, H. J. and Waseem, M. (2013). Using notches to uncover optimization frictions and structural elasticities: Theory and evidence from Pakistan. <em>Quarterly Journal of Economics</em>, 128(2):669–723.</p>
+<div id="ref-lahiri2020">
+
+</div>
+<p>Lahiri, A. (2020). The great Indian demonetization. <em>Journal of Economic Perspectives</em>, 34(1):55–74.</p>
+<div id="ref-marino2008">
+
+</div>
+<p>Marino, S., Hogue, I. B., Ray, C. J., and Kirschner, D. E. (2008). A methodology for performing global uncertainty and sensitivity analysis in systems biology. <em>Journal of Theoretical Biology</em>, 254(1):178–196.</p>
+<div id="ref-mcfadden1974">
+
+</div>
+<p>McFadden, D. (1974). Conditional logit analysis of qualitative choice behavior. In Zarembka, P. (ed.), <em>Frontiers in Econometrics</em>, 105–142. Academic Press.</p>
+<div id="ref-medina2018">
+
+</div>
+<p>Medina, L. and Schneider, F. (2018). Shadow economies around the world: What did we learn over the last 20 years? IMF Working Paper WP/18/17.</p>
+<div id="ref-olken2012">
+
+</div>
+<p>Olken, B. A. and Pande, R. (2012). Corruption in developing countries. <em>Annual Review of Economics</em>, 4:479–509.</p>
+<div id="ref-papke1996">
+
+</div>
+<p>Papke, L. E. and Wooldridge, J. M. (1996). Econometric methods for fractional response variables with an application to 401(k) plan participation rates. <em>Journal of Applied Econometrics</em>, 11(6):619–632.</p>
+<div id="ref-ragin2008">
+
+</div>
+<p>Ragin, C. C. (2008). <em>Redesigning Social Inquiry: Fuzzy Sets and Beyond</em>. University of Chicago Press.</p>
+<div id="ref-rbi2018">
+
+</div>
+<p>Reserve Bank of India (2018). <em>Annual Report 2017–18</em>. Mumbai.</p>
+<div id="ref-rogoff1998">
+
+</div>
+<p>Rogoff, K. (1998). Blessing or curse? Foreign and underground demand for euro notes. <em>Economic Policy</em>, 13(26):261–303.</p>
+<div id="ref-rogoff2016">
+
+</div>
+<p>Rogoff, K. S. (2016). <em>The Curse of Cash</em>. Princeton University Press.</p>
+<div id="ref-saez2010">
+
+</div>
+<p>Saez, E. (2010). Do taxpayers bunch at kink points? <em>American Economic Journal: Economic Policy</em>, 2(3):180–212.</p>
+<div id="ref-sands2016">
+
+</div>
+<p>Sands, P., Campbell, H., Keatinge, T., and Weisman, B. (2016). Making it harder for the bad guys: The case for eliminating high denomination notes. M-RCBG Associate Working Paper 52, Harvard Kennedy School.</p>
+<div id="ref-schneider2000">
+
+</div>
+<p>Schneider, F. and Enste, D. H. (2000). Shadow economies: Size, causes, and consequences. <em>Journal of Economic Literature</em>, 38(1):77–114.</p>
+<div id="ref-stokes2005">
+
+</div>
+<p>Stokes, S. C. (2005). Perverse accountability: A formal model of machine politics with evidence from Argentina. <em>American Political Science Review</em>, 99(3):315–325.</p>
+<div id="ref-scindia2023">
+
+</div>
+<p>Supreme Court of India (2023). <em>Vivek Narayan Sharma v. Union of India</em>, judgment of 2 January 2023.</p>
+<div id="ref-tanzi1983">
+
+</div>
+<p>Tanzi, V. (1983). The underground economy in the United States: Annual estimates, 1930–80. <em>IMF Staff Papers</em>, 30(2):283–305.</p>
+<div id="ref-unger2007">
+
+</div>
+<p>Unger, B. (2007). <em>The Scale and Impacts of Money Laundering</em>. Edward Elgar.</p>
+<div id="ref-unodc2024">
+
+</div>
+<p>UNODC (2024). <em>Casinos, Money Laundering, Underground Banking, and Transnational Organized Crime in East and Southeast Asia: A Hidden and Accelerating Threat</em>. Vienna.</p>
+<div id="ref-vicente2014">
+
+</div>
+<p>Vicente, P. C. (2014). Is vote buying effective? Evidence from a field experiment in West Africa. <em>Economic Journal</em>, 124(574):F356–F387.</p>
+<h1 class="unnumbered" id="app:model">Appendix A. Model details</h1>
+<div id="tab:holders">
+<div class="tbl"><p class="tcap"><b>Table 10.</b> Holder groups: shares and behavioral parameters</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th colspan="5" style="text-align: center;">Thailand</th>
+<th colspan="5" style="text-align: center;">India 2016</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><span>2-6</span>(l)<span>7-11</span> Group</td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>σ</mi><mi>h</mi></msub><annotation encoding="application/x-tex">\sigma_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>h</mi></msub><annotation encoding="application/x-tex">w_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>h</mi></msub><annotation encoding="application/x-tex">a_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>h</mi></msub><annotation encoding="application/x-tex">g_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>h</mi></msub><annotation encoding="application/x-tex">d_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>σ</mi><mi>h</mi></msub><annotation encoding="application/x-tex">\sigma_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>h</mi></msub><annotation encoding="application/x-tex">w_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>h</mi></msub><annotation encoding="application/x-tex">a_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>h</mi></msub><annotation encoding="application/x-tex">g_h</annotation></semantics></math></td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>h</mi></msub><annotation encoding="application/x-tex">d_h</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;">Formal households</td>
+<td style="text-align: center;">0.32</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.95</td>
+<td style="text-align: center;">0.85</td>
+<td style="text-align: center;">0.35</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">0.80</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.60</td>
+</tr>
+<tr>
+<td style="text-align: left;">Vulnerable households</td>
+<td style="text-align: center;">0.17</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">0.55</td>
+<td style="text-align: center;">0.35</td>
+<td style="text-align: center;">0.80</td>
+<td style="text-align: center;">0.27</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.45</td>
+<td style="text-align: center;">0.05</td>
+<td style="text-align: center;">0.95</td>
+</tr>
+<tr>
+<td style="text-align: left;">Formal firms</td>
+<td style="text-align: center;">0.08</td>
+<td style="text-align: center;">0.25</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">0.90</td>
+<td style="text-align: center;">0.25</td>
+<td style="text-align: center;">0.08</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">0.50</td>
+<td style="text-align: center;">0.40</td>
+</tr>
+<tr>
+<td style="text-align: left;">Informal businesses</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">0.25</td>
+<td style="text-align: center;">0.60</td>
+<td style="text-align: center;">0.50</td>
+<td style="text-align: center;">0.85</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.55</td>
+<td style="text-align: center;">0.05</td>
+<td style="text-align: center;">0.95</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cross-border holders</td>
+<td style="text-align: center;">0.05</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">0.70</td>
+<td style="text-align: center;">0.02</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.10</td>
+<td style="text-align: center;">0.80</td>
+</tr>
+<tr>
+<td style="text-align: left;">Banks and ATMs</td>
+<td style="text-align: center;">0.08</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.03</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">0.00</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p><em>Notes:</em> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>σ</mi><mi>h</mi></msub><annotation encoding="application/x-tex">\sigma_h</annotation></semantics></math>: share of the demonetized stock (summing to 0.90 at an illicit share of 0.10 and rescaled otherwise); <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>h</mi></msub><annotation encoding="application/x-tex">w_h</annotation></semantics></math>: transaction weight; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>h</mi></msub><annotation encoding="application/x-tex">a_h</annotation></semantics></math>: bank access; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>h</mi></msub><annotation encoding="application/x-tex">g_h</annotation></semantics></math>: digital readiness; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>h</mi></msub><annotation encoding="application/x-tex">d_h</annotation></semantics></math>: cash dependence. Access, readiness and dependence receive <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>15</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\pm15\%</annotation></semantics></math> multiplicative noise in each draw.</p>
+<div id="tab:params">
+<div class="tbl"><p class="tcap"><b>Table 11.</b> Parameter ranges (uniform priors)</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: center;">S1</th>
+<th style="text-align: center;">S2</th>
+<th style="text-align: center;">S3</th>
+<th style="text-align: center;">S4</th>
+<th style="text-align: center;">IN16</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Window or legal-tender period (days)</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">90</td>
+<td style="text-align: center;">1,825</td>
+<td style="text-align: center;">1,825</td>
+<td style="text-align: center;">50</td>
+</tr>
+<tr>
+<td style="text-align: left;">Demonetized share of currency</td>
+<td style="text-align: center;">0.72</td>
+<td style="text-align: center;">0.72</td>
+<td style="text-align: center;">0.72</td>
+<td style="text-align: center;">0.72</td>
+<td style="text-align: center;">0.86</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bank scrutiny <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>κ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\kappa_b</annotation></semantics></math></td>
+<td style="text-align: center;">0.35–0.65</td>
+<td style="text-align: center;">0.30–0.60</td>
+<td style="text-align: center;">0.20–0.40</td>
+<td style="text-align: center;">0.50–0.80</td>
+<td style="text-align: center;">0.25–0.55</td>
+</tr>
+<tr>
+<td style="text-align: left;">Dealer scrutiny <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>κ</mi><mi>d</mi></msub><annotation encoding="application/x-tex">\kappa_d</annotation></semantics></math></td>
+<td style="text-align: center;">0.20–0.40</td>
+<td style="text-align: center;">0.20–0.40</td>
+<td style="text-align: center;">0.10–0.30</td>
+<td style="text-align: center;">0.50–0.80</td>
+<td style="text-align: center;">0.10–0.30</td>
+</tr>
+<tr>
+<td style="text-align: left;">Structuring fee <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>f</mi><mi>s</mi></msup><annotation encoding="application/x-tex">f^{s}</annotation></semantics></math></td>
+<td style="text-align: center;">10–30%</td>
+<td style="text-align: center;">5–20%</td>
+<td style="text-align: center;">0–3%</td>
+<td style="text-align: center;">3–10%</td>
+<td style="text-align: center;">15–35%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Structuring capacity (% of stock per day)</td>
+<td style="text-align: center;">0.05–0.30</td>
+<td style="text-align: center;">0.05–0.25</td>
+<td style="text-align: center;">0.008–0.022</td>
+<td style="text-align: center;">0.003–0.008</td>
+<td style="text-align: center;">0.05–0.40</td>
+</tr>
+<tr>
+<td style="text-align: left;">Conversion premium <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>f</mi><mi>c</mi></msup><annotation encoding="application/x-tex">f^{c}</annotation></semantics></math></td>
+<td style="text-align: center;">15–40%</td>
+<td style="text-align: center;">3–10%</td>
+<td style="text-align: center;">1–4%</td>
+<td style="text-align: center;">5–15%</td>
+<td style="text-align: center;">15–40%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Amnesty tax <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math></td>
+<td style="text-align: center;">50–60%</td>
+<td style="text-align: center;">none</td>
+<td style="text-align: center;">none</td>
+<td style="text-align: center;">none</td>
+<td style="text-align: center;">50–60%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Illicit share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></td>
+<td style="text-align: center;">4–20%</td>
+<td style="text-align: center;">4–20%</td>
+<td style="text-align: center;">4–20%</td>
+<td style="text-align: center;">4–20%</td>
+<td style="text-align: center;">2–30%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Replacement rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> (% per day)</td>
+<td style="text-align: center;">0.4–1.5</td>
+<td style="text-align: center;">0.3–1.2</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">0.4–0.7</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p><em>Notes:</em> Common to all scenarios: black share <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><mn>0.25</mn><mo>,</mo><mn>0.60</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\beta\sim U(0.25,0.60)</annotation></semantics></math>; detectability of structuring <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>s</mi></msub><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><mn>0.05</mn><mo>,</mo><mn>0.15</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">q_s\sim U(0.05,0.15)</annotation></semantics></math> and of conversion <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>c</mi></msub><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><mn>0.05</mn><mo>,</mo><mn>0.15</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">q_c\sim U(0.05,0.15)</annotation></semantics></math> unless stated in the code; holdings <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">L</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><mn>0.3</mn><mo>,</mo><mn>1.8</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{LogNormal}(\ln0.3,1.8)</annotation></semantics></math>; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>0</mn></msub><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">\tau_0=4</annotation></semantics></math> days; Gumbel scale 0.02.</p>
+<div id="alg:alloc">
+<div class="tbl"><p class="tcap"><b>Table 12.</b> Capacity-constrained allocation</p><div class="tscroll"><table>
+<tbody>
+<tr>
+<td style="text-align: right;">1.</td>
+<td style="text-align: left;">Draw holdings <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>i</mi></msub><annotation encoding="application/x-tex">x_i</annotation></semantics></math>, types, loss parameters <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>π</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\pi_i</annotation></semantics></math>, risk multipliers <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ρ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\rho_i</annotation></semantics></math> and fees; compute <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>V</mi><mi>i</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">V_i^k</annotation></semantics></math> from (<a href="#eq:values">5</a>) and add Gumbel noise.</td>
+</tr>
+<tr>
+<td style="text-align: right;">2.</td>
+<td style="text-align: left;">Set structuring and conversion capacities as shares of illicit holdings; draw a random processing order.</td>
+</tr>
+<tr>
+<td style="text-align: right;">3.</td>
+<td style="text-align: left;">For up to five rounds: each unassigned agent selects its best available channel. Unconstrained channels (deposit, amnesty, abandonment) accept immediately; for each constrained channel, accept agents in processing order while cumulative holdings do not exceed remaining capacity, and remove the channel from the choice set of rejected agents.</td>
+</tr>
+<tr>
+<td style="text-align: right;">4.</td>
+<td style="text-align: left;">Compute value-weighted shares of extinguished, captured, regularized, laundered and displaced value.</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h1 class="unnumbered" id="app:repl">Appendix B. Replication</h1>
+<p>The model is implemented in <code>demonet_sim_th.py</code> (Python 3 with NumPy, pandas and Matplotlib). The command <code>python demonet_sim_th.py --draws 600 --seed 7 --out out</code> reproduces all simulation results, writing ten CSV files and six PNG figures; the PRCC coefficients are computed from <code>mc_results.csv</code>. Before any policy use, the denomination data, holder parameters, logistics ranges and scenario priors must be replaced with verified values; the items most in need of verification are the stock of banknotes by denomination, the reporting thresholds under Thai AML and tax law, and the episode-level figures in Table <a href="#tab:episodes">2</a>.</p>
+</article>
+<section class="cite" aria-label="How to cite"><h2>How to cite</h2><pre><code>@misc{chongmankhong2026demonetization,
+  author = {Chongmankhong, Thanatchon},
+  title  = {Can Demonetization Defeat Grey Capital? Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring {Thailand}&#x27;s 1,000-Baht Note},
+  year   = {2026},
+  note   = {Preprint},
+  url    = {https://thanatchon36.github.io/demonetsim-th/paper/}
+}</code></pre></section>
+<footer class="colophon">
+<p>Draft for discussion. All statistics are approximations that must be verified against primary sources, in particular Bank of Thailand banknote statistics; model parameters are assumptions, and no live data sources were consulted. References were compiled without database access and their bibliographic details must be checked. The author acknowledges AI assistance (Claude, Anthropic) in drafting, coding and figure design. Replication code: <code>demonet_sim_th.py</code> (seed 7).</p>
+<p>Rendered from <code>paper/en/main.tex</code> by <code>paper/build_web.py</code> (<code>make web</code>). The results strip is read from <code>results/</code> (seed 7). The PDF is authoritative.</p>
+</footer>
+</div>
+</body>
+</html>

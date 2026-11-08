@@ -1,0 +1,27 @@
+{
+  "title": "demonetsim-th",
+  "upload_type": "software",
+  "description": "DemonetSim-TH: agent-based simulation of a demonetization of Thailand's 1,000-baht banknote. Illicit holders choose among deposit, structuring through money mules, conversion into alternative stores of value, amnesty and abandonment under capacity-constrained laundering, while honest holders face a liquidity gap governed by replacement logistics. Calibrated to India's 2016 demonetization by approximate Bayesian computation, with Monte Carlo scenarios, PRCC global sensitivity analysis and bootstrap standard errors. Companion software to the preprint \"Can Demonetization Defeat Grey Capital? Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring Thailand's 1,000-Baht Note\".",
+  "creators": [
+    {
+      "name": "Chongmankhong, Thanatchon"
+    }
+  ],
+  "license": "mit",
+  "keywords": [
+    "demonetization",
+    "money laundering",
+    "agent-based model",
+    "approximate Bayesian computation",
+    "Thailand",
+    "banknotes"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://thanatchon36.github.io/demonetsim-th/paper/",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-preprint",
+      "scheme": "url"
+    }
+  ]
+}

@@ -1,22 +1,30 @@
 cff-version: 1.2.0
-message: "If you use this work, please cite it as below."
-title: "DemonetSim-TH: Can Demonetization Defeat Grey Capital?"
+message: "Please cite the paper (preferred-citation); if you use the DemonetSim-TH model, also cite the software."
+title: "DemonetSim-TH: an agent-based model of retiring Thailand's 1,000-baht note"
+abstract: >-
+  Agent-based simulation of a demonetization of Thailand's 1,000-baht banknote:
+  illicit holders choose among deposit, structuring through money mules,
+  conversion into alternative stores of value, amnesty and abandonment under
+  capacity-constrained laundering, while honest holders face a liquidity gap
+  governed by replacement logistics. Calibrated to India's 2016 demonetization
+  by approximate Bayesian computation, with Monte Carlo scenarios, PRCC global
+  sensitivity analysis and bootstrap standard errors.
+type: software
 authors:
-  - family-names: "Chongmankhong"
-    given-names: "Thanatchon"
-version: "1.0.0"
+  - family-names: Chongmankhong
+    given-names: Thanatchon
+version: 1.0.0
 date-released: 2026-11-07
-keywords:
-  - demonetization
-  - money laundering
-  - agent-based model
-  - approximate Bayesian computation
-  - Thailand
+license: MIT
+repository-code: "https://github.com/thanatchon36/demonetsim-th"
+url: "https://thanatchon36.github.io/demonetsim-th/paper/"
+keywords: [demonetization, money-laundering, agent-based-model, approximate-bayesian-computation, thailand, banknotes]
 preferred-citation:
-  type: article
+  type: generic
   title: "Can Demonetization Defeat Grey Capital? Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring Thailand's 1,000-Baht Note"
   authors:
-    - family-names: "Chongmankhong"
-      given-names: "Thanatchon"
+    - family-names: Chongmankhong
+      given-names: Thanatchon
   year: 2026
-  status: preprint
+  url: "https://thanatchon36.github.io/demonetsim-th/paper/"
+  notes: "Preprint draft; statistics are approximations and model parameters are assumptions."

@@ -1,0 +1,19 @@
+[project]
+name = "demonetsim-th"
+version = "1.0.0"
+description = "Agent-based model of retiring Thailand's 1,000-baht note, calibrated to India 2016 by ABC"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+paper = ["weasyprint>=60", "markdown>=3.4", "pypdfium2>=4.0", "Pillow>=10.0"]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

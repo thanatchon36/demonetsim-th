@@ -13,3 +13,7 @@ paper/en/main.pdf
 # generated during builds
 paper/figs_th/
 build/
+
+# environment
+.venv/
+.pytest_cache/
