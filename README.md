@@ -8,6 +8,8 @@
 <a href="paper/pdf/paper_th.pdf"><img src="https://img.shields.io/badge/%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2-PDF-f5a623?style=flat-square&labelColor=0b1020" alt="Thai paper PDF"></a>
 <a href="#limitations"><img src="https://img.shields.io/badge/data-approximate-b0560f?style=flat-square&labelColor=0b1020" alt="Data: approximate"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-ffe8a3?style=flat-square&labelColor=0b1020" alt="License MIT"></a>
+<a href="https://zenodo.org/badge/latestdoi/1450039515"><img src="https://zenodo.org/badge/1450039515.svg" alt="DOI"></a>
+<a href="https://huggingface.co/datasets/thanatchon36/demonetsim-th"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20dataset-demonetsim--th-f5a623?style=flat-square&labelColor=0b1020" alt="Hugging Face dataset"></a>
 </p>
 
 <p align="center">
@@ -15,6 +17,7 @@
 📄 <b><a href="paper/pdf/paper_en.pdf">Download the PDF</a></b> ·
 🇹🇭 <b><a href="paper/pdf/paper_th.pdf">ฉบับภาษาไทย</a></b> ·
 📊 <b><a href="results/">Model outputs</a></b> ·
+🤗 <b><a href="https://huggingface.co/datasets/thanatchon36/demonetsim-th">Dataset</a></b> ·
 🧭 <b><a href="prompts/master_prompt_th.md">Master prompt</a></b>
 </p>
 
@@ -53,8 +56,7 @@ make test       # 21 tests, including the check that results/ carry the numbers 
 make web        # web reader only (needs pandoc)
 ```
 
-Without uv: `pip install numpy pandas matplotlib` runs the model; add `weasyprint markdown pypdfium2 Pillow` for the
-papers.
+Without uv: `pip install numpy pandas matplotlib` runs the model; add `weasyprint svglib pypdfium2 Pillow` for the papers.
 
 Outputs: `results/` (CSV, PNG, `prcc_s1.json`, `summary_stats.txt`), `paper/en/figs_en/` (12 vector figures),
 `paper/pdf/paper_en.pdf`, `paper/pdf/paper_th.pdf` and the web reader `docs/paper/`.
@@ -65,7 +67,7 @@ Outputs: `results/` (CSV, PNG, `prcc_s1.json`, `summary_stats.txt`), `paper/en/f
 | `analysis` | PRCC global sensitivity, bootstrap standard errors, ABC prior/posterior → `results/prcc_s1.json`, `summary_stats.txt` |
 | `figures` | 12 English figures; measures every label with real font metrics and should print `OK` for all 12 |
 | `paper-en` | English paper, arXiv preprint format (`pdflatex`) → `paper/pdf/paper_en.pdf` |
-| `paper-th` | Thai paper (HTML/CSS → PDF via WeasyPrint) → `paper/pdf/paper_th.pdf` |
+| `paper-th` | Thai paper, arXiv preprint format (pandoc → LaTeX → tectonic) → `paper/pdf/paper_th.pdf` |
 | `web` | Web reader → `docs/paper/index.html`, served at <https://thanatchon36.github.io/demonetsim-th/paper/> |
 | `banner` | README images → `docs/assets/banner.png`, `docs/assets/preview.png` |
 | `arxiv` | arXiv upload package → `build/arxiv_source.zip` |
@@ -92,13 +94,16 @@ Outputs: `results/` (CSV, PNG, `prcc_s1.json`, `summary_stats.txt`), `paper/en/f
 
 The preprint by Thanatchon Chongmankhong is in [`paper/`](paper/): the English PDF in
 [`paper/pdf/paper_en.pdf`](paper/pdf/paper_en.pdf) with its source [`paper/en/main.tex`](paper/en/main.tex), and the
-Thai-language companion in [`paper/pdf/paper_th.pdf`](paper/pdf/paper_th.pdf) with its source
-[`paper/paper_th.md`](paper/paper_th.md). The paper synthesizes twelve demonetization episodes, formalizes a
+Thai-language companion by ธนัชชนม์ จงมั่นคง in [`paper/pdf/paper_th.pdf`](paper/pdf/paper_th.pdf), set in the
+same arXiv preprint layout from its source [`paper/paper_th.md`](paper/paper_th.md). The paper synthesizes twelve demonetization episodes, formalizes a
 *demonetization trilemma* (no design secures bite, smoothness and integrity at once) and proposes three identification
 strategies to test whether the 1,000-baht note is in fact a preferred medium of illicit exchange.
 
 - Web reader: <https://thanatchon36.github.io/demonetsim-th/paper/>, rendered from `main.tex` by `paper/build_web.py`
 - Figures: [`paper/en/figs_en/`](paper/en/figs_en/) · Model outputs: [`results/`](results/)
+- Dataset on Hugging Face: [`thanatchon36/demonetsim-th`](https://huggingface.co/datasets/thanatchon36/demonetsim-th),
+  with every model output (Monte Carlo draws, ABC prior and accepted draws, summaries) and the model's input tables;
+  rebuilt by `scripts/export_hf.py`
 
 ## Repository layout
 
@@ -112,7 +117,9 @@ paper/
   en/figs_en/               12 vector figures (PDF) and their SVG sources
   figures.py                shared SVG helpers + Thai figure set
   figures_en.py             English figure set + automatic text-overlap checker
-  build_th.py               Thai paper builder (HTML/CSS -> PDF via WeasyPrint)
+  build_th.py               Thai paper builder (paper_th.md -> LaTeX via pandoc -> PDF via tectonic)
+  template_th.tex           arXiv preprint layout for the Thai paper (XeTeX)
+  fonts/                    Sarabun, the Thai typeface (SIL Open Font License)
   build_web.py              web reader builder (main.tex -> docs/paper/ via pandoc)
   reader.html               pandoc template for the web reader
   paper_th.md               Thai manuscript
@@ -122,6 +129,7 @@ prompts/master_prompt_th.md master prompt used to structure the research (Thai)
 scripts/
   check_whitespace.py       measures blank space on every page of a PDF
   make_banner.py            README banner and preview
+  export_hf.py, hf_card.md  Hugging Face dataset and its card
 tests/                      denominations, model identities and statics, committed results
 ```
 
@@ -129,10 +137,11 @@ tests/                      denominations, model identities and statics, committ
 
 - Python 3.10+ (3.12 with `make setup`); dependencies in [`pyproject.toml`](pyproject.toml).
 - A TeX distribution with `pdflatex` and standard packages (mathptmx, natbib, booktabs, tabularx, threeparttable,
-  titlesec, fancyhdr, hyperref); pandoc for the web reader.
-- WeasyPrint needs the Pango system library (version 1.44 or later).
-- Fonts: Inter for the English figures; Sarabun and IBM Plex Sans Thai for the Thai paper. All are available from
-  Google Fonts under the SIL Open Font License.
+  titlesec, fancyhdr, hyperref) for the English paper; [tectonic](https://tectonic-typesetting.github.io/) for the
+  Thai paper; pandoc for the Thai paper and the web reader.
+- WeasyPrint, for the English figures (`make figures`), needs the Pango system library (version 1.44 or later).
+- Fonts: Inter for the English figures; Sarabun for the Thai paper, bundled in `paper/fonts/` (Google Fonts, SIL Open
+  Font License).
 
 ## Limitations
 
@@ -148,7 +157,8 @@ the master prompt used to structure the research.
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff). License: MIT.
+See [`CITATION.cff`](CITATION.cff); each release is archived on Zenodo (DOI badge above). License: MIT (code);
+the Hugging Face dataset is CC BY 4.0.
 
 ```bibtex
 @misc{chongmankhong2026demonetization,

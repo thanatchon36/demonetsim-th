@@ -1,0 +1,98 @@
+% Thai paper, arXiv preprint layout (the same page, title block and headings as paper/en/main.tex).
+% Filled by paper/build_th.py (double-at placeholders) from paper/paper_th.md, body converted by pandoc; compiled with tectonic (XeTeX).
+% Latin text and math in Times (TeX Gyre Termes, newtx); Thai in Sarabun, bundled in paper/fonts/ (SIL OFL).
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxmath}
+\usepackage[no-math]{fontspec}
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\setmonofont{DejaVuSansMono}[Extension=.ttf, Scale=0.85, BoldFont=*-Bold]
+\newfontfamily\thaifont{Sarabun}[Path=../fonts/, Extension=.ttf, UprightFont=*-Regular, BoldFont=*-Bold,
+  ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic, Scale=MatchLowercase]
+% glyphs neither Termes nor Sarabun has
+\newfontfamily\symfont{DejaVuSans}[Extension=.ttf]
+\usepackage{newunicodechar}
+\newunicodechar{★}{{\symfont\symbol{"2605}}}
+\newunicodechar{₹}{{\symfont\symbol{"20B9}}}
+\newfontfamily\figfont{Sarabun}[Path=../fonts/, Extension=.ttf, UprightFont=*-Regular, BoldFont=*-SemiBold]
+% Thai characters (U+0E00-U+0E7F) switch to Sarabun on their own; ICU breaks Thai lines between words.
+\XeTeXinterchartokenstate=1
+\newXeTeXintercharclass\ThaiClass
+\count255="0E00
+\loop\XeTeXcharclass\count255=\ThaiClass\ifnum\count255<"0E7F\advance\count255 1\repeat
+\XeTeXinterchartoks 0 \ThaiClass = {\begingroup\thaifont}
+\XeTeXinterchartoks 4095 \ThaiClass = {\begingroup\thaifont}
+\XeTeXinterchartoks \ThaiClass 0 = {\endgroup}
+\XeTeXinterchartoks \ThaiClass 4095 = {\endgroup}
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\linespread{1.12}
+
+\usepackage[letterpaper,margin=1in,headheight=14pt]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs,longtable,array,calc,etoolbox}
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf,labelsep=space,skip=6pt,justification=justified]{caption}
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{2F6DB5}
+\usepackage[colorlinks=true,linkcolor=accent,citecolor=accent,urlcolor=accent]{hyperref}
+\hypersetup{pdftitle={@@pdftitle@@},pdfauthor={@@author@@},pdflang={th}}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+\titlespacing*{\section}{0pt}{16pt}{7pt}
+\titlespacing*{\subsection}{0pt}{11pt}{5pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\itshape @@runninghead@@}
+\fancyhead[R]{\small\scshape A Preprint -- @@date@@}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+\renewcommand{\figurename}{รูปที่}
+\renewcommand{\tablename}{ตารางที่}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlist{itemsep=2pt,topsep=4pt}
+\AtBeginEnvironment{longtable}{\footnotesize}
+\setlength{\LTpre}{8pt}\setlength{\LTpost}{8pt}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\def\LTcaptype{table}
+\renewcommand{\topfraction}{0.88}\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}\renewcommand{\floatpagefraction}{0.9}
+\setcounter{topnumber}{2}\setcounter{bottomnumber}{2}\setcounter{totalnumber}{4}
+\makeatletter\setlength{\@fptop}{0pt}\setlength{\@fpsep}{14pt}\setlength{\@fpbot}{0pt plus 1fil}\makeatother
+\newenvironment{refs}{\small\begin{list}{}{\setlength{\leftmargin}{1.5em}\setlength{\itemindent}{-1.5em}%
+  \setlength{\itemsep}{1.5pt}\setlength{\parsep}{0pt}}}{\end{list}}
+
+\begin{document}
+\thispagestyle{plain}
+\begin{center}
+\vspace*{-0.25in}
+\rule{\textwidth}{2.5pt}\par\vspace{12pt}
+{\LARGE\bfseries @@title@@\par}\vspace{8pt}
+{\large @@subtitle@@\par}
+\vspace{10pt}\rule{\textwidth}{0.8pt}\par\vspace{18pt}
+{\large\bfseries @@author@@$^{\ast}$\par}\vspace{6pt}
+{\normalsize @@date@@\par}
+\end{center}
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnotetext[1]{@@thanks@@}}
+\vspace{6pt}
+\begin{center}{\large\bfseries บทคัดย่อ}\end{center}
+\vspace{-4pt}
+\begin{quote}\small
+@@abstract@@
+\end{quote}
+\begin{quote}\small
+\textbf{คำสำคัญ} @@keywords@@\\[3pt]
+\textbf{รหัส JEL} @@jel@@
+\end{quote}
+\vspace{4pt}
+
+@@body@@
+
+\end{document}

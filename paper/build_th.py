@@ -1,12 +1,51 @@
-import os, re, sys, json
-import markdown
-from weasyprint import HTML
+"""Build the Thai paper in arXiv preprint layout -> paper/pdf/paper_th.pdf.
+
+paper_th.md is the manuscript. Its body is converted to LaTeX by pandoc and set in paper/template_th.tex, the
+same page, title block and headings as the English paper (paper/en/main.tex); tectonic (XeTeX) compiles it with
+Times for Latin text and Sarabun (paper/fonts/) for Thai. The 11 figures come from figures.py: their shapes are
+converted from SVG to PDF by svglib and their labels are set by XeTeX on top. Build files go to paper/figs_th/
+(paper_th.tex is the generated source).
+
+Requires pandoc, tectonic and svglib (in the paper extra). Usage: python paper/build_th.py
+"""
+import json
+import os
+import re
+import shutil
+import subprocess
+
 import figures
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(HERE)
+BUILD = 'figs_th'
 os.makedirs('pdf', exist_ok=True)
-eqs = figures.write_all('figs_th')
+figures.write_all(BUILD)
+
+AUTHOR = 'ธนัชชนม์ จงมั่นคง'
+DATE = '7 พฤศจิกายน 2026'
+TITLE = 'การยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา–ทุนดำ'
+SUBTITLE = 'บทเรียนนานาชาติ แบบจำลองเชิงนโยบาย และวาระการวิจัยสำหรับประเทศไทย'
+RUNNING_HEAD = 'การยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา–ทุนดำ'
+THANKS = ('ร่างเพื่อการอภิปราย ตัวเลขทั้งหมดเป็นค่าประมาณที่ต้องตรวจทานกับแหล่งปฐมภูมิ โดยเฉพาะสถิติธนบัตรออกใช้ของ'
+          'ธนาคารแห่งประเทศไทย พารามิเตอร์ของแบบจำลองเป็นสมมติฐาน และไม่ได้ใช้แหล่งข้อมูลออนไลน์ '
+          'รายการอ้างอิงรวบรวมโดยไม่ได้ค้นฐานข้อมูลและต้องตรวจสอบรายละเอียดบรรณานุกรม ผู้เขียนใช้ AI (Claude, '
+          'Anthropic) ช่วยร่าง เขียนโค้ด และออกแบบภาพ ฉบับภาษาอังกฤษ: \\textit{Can Demonetization Defeat Grey '
+          'Capital?} โค้ดสำหรับทำซ้ำ: \\texttt{demonet\\_sim\\_th.py} (seed 7), '
+          '\\url{https://github.com/thanatchon36/demonetsim-th}')
+ABSTRACT = [
+    'งานนี้ประเมินข้อเสนอยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา ทุนดำ การซื้อเสียง และคอร์รัปชัน โดยทบทวน 12 '
+    'กรณีต่างประเทศ วัดมูลค่าแบงก์พันเทียบรายได้ และสร้างแบบจำลอง \\textit{DemonetSim-TH} ที่ปรับเทียบกับอินเดีย 2016 '
+    'ด้วยวิธี ABC',
+    'แบงก์พันมีค่าเพียง 0.38\\% ของรายได้ต่อหัว ราวหนึ่งในสี่ของ €500 ในแบบจำลอง การยกเลิกแบบช็อกทำลายหรือยึด'
+    'เงินผิดกฎหมายได้ราว 8\\% (มัธยฐาน) แต่ทำให้เศรษฐกิจสะดุดราว 1 ใน 6 ของอินเดีย และราว 90\\% ของภาระตกกับ'
+    'กลุ่มเปราะบาง เงินผิดกฎหมายส่วนใหญ่เข้าระบบโดยไม่ถูกตรวจพบ หรือย้ายไปอยู่ในทอง ดอลลาร์ และคริปโต',
+    'ตัวแปรชี้ขาดคือความจุของเครือข่ายฟอกเงิน ไม่ใช่ความเข้มงวดของการตรวจ การทยอยเลิกควบคู่ชุดมาตรการ AML '
+    'ได้ผลราว 6\\% โดยไม่กระทบสภาพคล่อง งานนี้เสนอวาระวิจัย 15 หัวข้อ โดยมีหัวข้อเรือธง 3 เรื่องที่ทดสอบได้ว่า'
+    'แบงก์พันเป็นสื่อหลักของเงินผิดกฎหมายจริงหรือไม่',
+]
+KEYWORDS = ['การยกเลิกธนบัตร', 'ทุนเทา', 'การฟอกเงิน', 'เงินสด', 'แบบจำลองตัวแทน', 'ประเทศไทย']
+JEL = ['E41', 'E42', 'E58', 'H26', 'K42', 'O17', 'C63']
 
 CAPTIONS = {
     1: 'ข้อเสนอเชิงแนวคิดของงานนี้: 3 เป้าหมายที่ขัดกันเอง และ 3 รูปแบบนโยบาย',
@@ -22,145 +61,118 @@ CAPTIONS = {
     11: 'แผนที่วาระการวิจัย · การประเมินของผู้เขียน (ตารางที่ 9) · 15 หัวข้อ',
 }
 
-body = markdown.markdown(open('paper_th.md', encoding='utf-8').read(),
-                         extensions=['tables', 'fenced_code'])
-
-K, COLW = 172 / 760, 172  # mm per SVG unit, column width in mm
-
-
-def esc(s):
-    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+# ---------------------------------------------------------------------------------------------- figures
+# figures.py draws each figure as SVG shapes plus a list of text labels in SVG units (760 wide). svglib turns the
+# shapes into figN_shapes.pdf; the labels are set by XeTeX in a picture environment on top, so Thai is shaped by
+# the same engine and font as the text.
+TEXTWIDTH_PT = 469.755  # 6.5 in: letter paper with 1 in margins
+UNIT = TEXTWIDTH_PT / 760
 
 
-def fig_html(n):
-    meta = json.load(open(f'figs_th/fig{n}.json', encoding='utf-8'))
-    H = meta['h'] * K
-    spans = []
+def figure_shapes(n):
+    from reportlab.graphics import renderPDF
+    from svglib.svglib import svg2rlg
+
+    renderPDF.drawToFile(svg2rlg(f'{BUILD}/fig{n}.svg'), f'{BUILD}/fig{n}_shapes.pdf')
+
+
+def figure_overlay(n):
+    meta = json.load(open(f'{BUILD}/fig{n}.json', encoding='utf-8'))
+    H = meta['h']
+    box = {'start': '[l]', 'end': '[r]', 'middle': ''}
+    puts = []
     for x, y, s, size, w, anchor, fill in meta['texts']:
-        fs = size * K
-        st = f'top:{y * K - 0.875 * fs:.2f}mm;font-size:{fs * 2.8346:.2f}pt;font-weight:{w};color:{fill};'
-        if anchor == 'start':
-            st += f'left:{x * K:.2f}mm;'
-        elif anchor == 'end':
-            st += f'right:{(760 - x) * K:.2f}mm;'
+        fs = size * UNIT
+        weight = '\\bfseries' if w >= 600 else ''
+        puts.append(f'\\put({x:g},{H - y:g}){{\\makebox[0pt]{box[anchor]}{{\\fontsize{{{fs:.2f}}}{{{fs:.2f}}}'
+                    f'\\selectfont{weight}\\color[HTML]{{{fill.lstrip("#").upper()}}}{tex_escape(s)}}}}}')
+    return (f'{{\\figfont\\XeTeXinterchartokenstate=0\\setlength{{\\unitlength}}{{{UNIT:.5f}pt}}%\n'
+            f'\\begin{{picture}}(760,{H:g})\n\\put(0,0){{\\includegraphics[width=760\\unitlength]{{fig{n}_shapes.pdf}}}}\n'
+            + '\n'.join(puts) + '\n\\end{picture}}')
+
+
+# ---------------------------------------------------------------------------------------------- manuscript -> LaTeX
+def tex_escape(s):
+    return (s.replace('\\', '\\textbackslash{}').replace('&', '\\&').replace('%', '\\%').replace('$', '\\$')
+            .replace('#', '\\#').replace('_', '\\_').replace('{', '\\{').replace('}', '\\}'))
+
+
+def figure_tex(n):
+    return (f'```{{=latex}}\n\\begin{{figure}}[!htbp]\\centering\n{figure_overlay(n)}\n'
+            f'\\caption{{{tex_escape(CAPTIONS[n])}}}\\label{{fig:{n}}}\n\\end{{figure}}\n```')
+
+
+def equation_tex(n):
+    lines = [s.strip('$') for s in figures.EQS[f'eq{n}']]
+    return '```{=latex}\n\\begin{equation}\\begin{gathered}\n' + ' \\\\\n'.join(lines) + '\n\\end{gathered}\\end{equation}\n```'
+
+
+def prepare(md):
+    md = re.sub(r'<sub>(.*?)</sub>', r'~\1~', md)
+    # Headings: LaTeX numbers sections; the manuscript's own numbers must agree with it.
+    sec = sub = 0
+
+    def heading(m):
+        nonlocal sec, sub
+        level, text = len(m.group(1)), m.group(2).strip()
+        num = re.match(r'(\d+)(?:\.(\d+))?\.?\s+(.*)', text)
+        if not num:
+            return f'{m.group(1)} {text} {{.unnumbered}}'
+        if level == 2:
+            sec, sub = sec + 1, 0
+            expect = (str(sec), None)
         else:
-            st += f'left:{x * K - 60:.2f}mm;width:120mm;text-align:center;'
-        spans.append(f'<span class="ft" style="{st}">{esc(s)}</span>')
-    return (f'<figure><div class="fig" style="height:{H:.2f}mm"><img src="figs_th/fig{n}.svg" alt="" '
-            f'style="width:{COLW}mm;height:{H:.2f}mm">' + ''.join(spans) + '</div>'
-            f'<figcaption><b>รูปที่ {n}</b> {CAPTIONS[n]}</figcaption></figure>')
+            sub += 1
+            expect = (str(sec), str(sub))
+        if (num.group(1), num.group(2)) != expect:
+            raise RuntimeError(f'heading number {text!r} does not match LaTeX numbering {expect}')
+        return f'{m.group(1)} {num.group(3)}'
+
+    md = re.sub(r'^(#{2,3}) (.*)$', heading, md, flags=re.M)
+    # "ตารางที่ N ..." directly above a table becomes its pandoc caption; LaTeX numbers it N.
+    count = 0
+
+    def caption(m):
+        nonlocal count
+        count += 1
+        if int(m.group(1)) != count:
+            raise RuntimeError(f'table caption {m.group(1)} out of order (expected {count})')
+        return f': {m.group(2)}\n\n|'
+
+    md = re.sub(r'^ตารางที่ (\d+) (.*)\n\n\|', caption, md, flags=re.M)
+    md = re.sub(r'^\[\[FIG(\d+)\]\]$', lambda m: figure_tex(int(m.group(1))), md, flags=re.M)
+    md = re.sub(r'^\[\[EQ(\d+)\]\]$', lambda m: equation_tex(int(m.group(1))), md, flags=re.M)
+    return md
 
 
-body = re.sub(r'<p>\[\[FIG(\d+)\]\]</p>', lambda m: fig_html(int(m.group(1))), body)
-body = re.sub(r'<p>\[\[EQ(\d+)\]\]</p>', lambda m: (
-    '<div class="eq">' + ''.join(f'<img src="{f}" alt="">' for f in eqs[f'eq{m.group(1)}']) + '</div>'), body)
-body = body.replace('<p>ตารางที่', '<p class="tcap">ตารางที่')
+def to_latex(md):
+    tex = subprocess.run(['pandoc', '--from=markdown-auto_identifiers', '--to=latex', '--wrap=preserve', '--shift-heading-level-by=-1',
+                          '--syntax-highlighting=none'],
+                         input=md, capture_output=True, text=True, check=True).stdout
+    # The reference list: a hanging-indent list like the English paper's bibliography.
+    head, sep, tail = tex.partition('\\section*{เอกสารอ้างอิงและอ่านเพิ่มเติม}')
+    if not sep:
+        raise RuntimeError('reference section not found')
+    tail = tail.replace('\\begin{itemize}', '\\begin{refs}', 1).replace('\\end{itemize}', '\\end{refs}', 1)
+    return head + sep + tail
 
 
-def _nw(m):
-    tag, inner = m.group(1), m.group(2)
-    return f'<{tag} class="nw">{inner}</{tag}>' if len(re.sub('<[^>]+>', '', inner)) <= 9 else m.group(0)
+body = to_latex(prepare(open('paper_th.md', encoding='utf-8').read()))
+template = open('template_th.tex', encoding='utf-8').read()
+fill = {
+    'pdftitle': f'{TITLE}: {SUBTITLE}', 'author': AUTHOR, 'runninghead': RUNNING_HEAD, 'date': DATE,
+    'title': TITLE, 'subtitle': SUBTITLE, 'thanks': THANKS, 'abstract': '\n\n'.join(ABSTRACT),
+    'keywords': ' $\\cdot$ '.join(KEYWORDS), 'jel': ' $\\cdot$ '.join(JEL), 'body': body,
+}
+for key, value in fill.items():
+    template = template.replace(f'@@{key}@@', value)
+if '@@' in template:
+    raise RuntimeError(f'unfilled placeholders: {set(re.findall(r"@@(\w+)@@", template))}')
 
-
-body = re.sub(r'<(td|th)>(.*?)</\1>', _nw, body)
-
-toc = []
-
-
-def add_id(m):
-    i = len(toc) + 1
-    toc.append((f'sec-{i}', re.sub('<[^>]+>', '', m.group(1))))
-    return f'<h2 id="sec-{i}">{m.group(1)}</h2>'
-
-
-body = re.sub(r'<h2>(.*?)</h2>', add_id, body)
-toc_html = ''.join(f'<li><a href="#{i}">{t}</a></li>' for i, t in toc)
-
-KEYS = [('0.38%', 'มูลค่าแบงก์พันเทียบรายได้ต่อหัว ราว 1 ใน 4 ของ €500'),
-        ('~8%', 'เงินผิดกฎหมายที่แบบช็อกทำลายหรือยึดได้ (มัธยฐาน)'),
-        ('~90%', 'สัดส่วนความปั่นป่วนที่ตกกับกลุ่มเปราะบาง'),
-        ('5–7%', 'ผลสูงสุดเมื่อช่องฟอกเงินรับได้เกินสต็อกเงินดำ')]
-keys_html = ''.join(f'<td><div class="kn">{n}</div><div class="kt">{t}</div></td>' for n, t in KEYS)
-
-ABSTRACT = """
-<p>งานนี้ประเมินข้อเสนอยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา ทุนดำ การซื้อเสียง และคอร์รัปชัน โดยทบทวน 12 กรณีต่างประเทศ วัดมูลค่าแบงก์พันเทียบรายได้ และสร้างแบบจำลอง DemonetSim-TH ที่ปรับเทียบกับอินเดีย 2016 ด้วยวิธี ABC</p>
-<p>แบงก์พันมีค่าเพียง 0.38% ของรายได้ต่อหัว ราวหนึ่งในสี่ของ €500 ในแบบจำลอง การยกเลิกแบบช็อกทำลายหรือยึดเงินผิดกฎหมายได้ราว 8% (มัธยฐาน) แต่ทำให้เศรษฐกิจสะดุดราว 1 ใน 6 ของอินเดีย และราว 90% ของภาระตกกับกลุ่มเปราะบาง เงินผิดกฎหมายส่วนใหญ่เข้าระบบโดยไม่ถูกตรวจพบ หรือย้ายไปอยู่ในทอง ดอลลาร์ และคริปโต</p>
-<p>ตัวแปรชี้ขาดคือความจุของเครือข่ายฟอกเงิน ไม่ใช่ความเข้มงวดของการตรวจ การทยอยเลิกควบคู่ชุดมาตรการ AML ได้ผลราว 6% โดยไม่กระทบสภาพคล่อง งานนี้เสนอวาระวิจัย 15 หัวข้อ โดยมีหัวข้อเรือธง 3 เรื่องที่ทดสอบได้ว่าแบงก์พันเป็นสื่อหลักของเงินผิดกฎหมายจริงหรือไม่</p>
-<p class="kw"><b>คำสำคัญ:</b> การยกเลิกธนบัตร · ทุนเทา · การฟอกเงิน · เงินสด · แบบจำลองตัวแทน · ประเทศไทย</p>
-"""
-
-CSS = """
-@page { size: A4; margin: 21mm 19mm 20mm 19mm;
-  @top-left { content: "การยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา–ทุนดำ"; font-family: 'IBM Plex Sans Thai'; font-size: 7.5pt; color: #8a8f98; }
-  @top-right { content: "Working Paper · พฤศจิกายน 2026"; font-family: 'IBM Plex Sans Thai'; font-size: 7.5pt; color: #8a8f98; }
-  @bottom-center { content: counter(page); font-family: 'IBM Plex Sans Thai'; font-size: 8.5pt; color: #5f6368; } }
-@page :first { @top-left { content: none } @top-right { content: none } @bottom-center { content: none } }
-html { font-family: 'Sarabun', 'Loma', sans-serif; font-size: 10.5pt; line-height: 1.6; color: #1f2328; }
-body { margin: 0; }
-p { margin: 0 0 7pt; orphans: 2; widows: 2; }
-a { color: inherit; text-decoration: none; }
-h2 { font-family: 'IBM Plex Sans Thai'; font-weight: 600; font-size: 15pt; line-height: 1.35; margin: 20pt 0 8pt;
-     padding-bottom: 4pt; border-bottom: 1.2pt solid #2f6db5; break-after: avoid; }
-h3 { font-family: 'IBM Plex Sans Thai'; font-weight: 600; font-size: 11.5pt; color: #2f6db5; margin: 14pt 0 5pt; break-after: avoid; }
-ol, ul { margin: 0 0 8pt; padding-left: 18pt; }
-li { margin-bottom: 3pt; }
-blockquote { margin: 10pt 0; padding: 8pt 12pt; background: #f4f7fb; border-left: 3pt solid #2f6db5; font-size: 9.5pt; color: #3c4043; }
-blockquote p { margin: 0; }
-table { width: 100%; border-collapse: collapse; margin: 4pt 0 12pt; font-size: 8.6pt; line-height: 1.45; }
-thead th { font-family: 'IBM Plex Sans Thai'; font-weight: 600; text-align: left; background: #eef2f7;
-           border-top: 1.2pt solid #1f2328; border-bottom: 0.8pt solid #1f2328; padding: 4pt 5pt; }
-td { padding: 3.5pt 5pt; border-bottom: 0.4pt solid #dfe2e6; vertical-align: top; }
-tbody tr:last-child td { border-bottom: 1.2pt solid #1f2328; }
-tr { break-inside: avoid; }
-.nw { white-space: nowrap; }
-p.tcap { font-family: 'IBM Plex Sans Thai'; font-size: 9pt; font-weight: 600; margin: 12pt 0 3pt; break-after: avoid; }
-figure { margin: 10pt 0 14pt; break-inside: avoid; }
-.fig { position: relative; width: 172mm; }
-.fig img { position: absolute; left: 0; top: 0; }
-.ft { position: absolute; white-space: nowrap; line-height: 1; font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif; }
-figcaption { font-family: 'IBM Plex Sans Thai'; font-size: 8pt; line-height: 1.45; color: #5f6368; margin-top: 4pt;
-             border-top: 0.5pt solid #e4e6e9; padding-top: 3pt; }
-figcaption b { color: #1f2328; margin-right: 3pt; }
-.eq { margin: 6pt 0 10pt; break-inside: avoid; }
-.eq img { display: block; margin: 5pt auto; }
-pre { background: #f6f8fa; border: 0.5pt solid #e1e4e8; padding: 7pt 9pt; font-size: 8.5pt; border-radius: 3pt; }
-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.5pt; }
-.cover { break-after: page; }
-.label { font-family: 'IBM Plex Sans Thai'; font-size: 8.5pt; font-weight: 600; letter-spacing: 0.6pt; color: #2f6db5; }
-.title { font-family: 'IBM Plex Sans Thai'; font-weight: 700; font-size: 20pt; line-height: 1.32; margin: 6pt 0 6pt; }
-.sub { font-style: italic; font-size: 10.5pt; color: #5f6368; margin-bottom: 9pt; }
-.meta { font-size: 8.8pt; color: #5f6368; border-top: 0.6pt solid #d0d4d9; border-bottom: 0.6pt solid #d0d4d9;
-        padding: 4pt 0; margin-bottom: 12pt; }
-table.keys { border-collapse: separate; border-spacing: 6pt 0; margin: 0 -6pt 12pt; font-size: 8.4pt; }
-table.keys td { width: 25%; border: none; border-top: 2.5pt solid #2f6db5; background: #f4f7fb; padding: 6pt 8pt 7pt; }
-table.keys tr:last-child td { border-bottom: none; }
-.kn { font-family: 'IBM Plex Sans Thai'; font-weight: 700; font-size: 17pt; color: #2f6db5; line-height: 1.2; }
-.kt { color: #3c4043; line-height: 1.35; margin-top: 2pt; }
-.abstract { background: #f8f9fa; border: 0.5pt solid #e4e6e9; border-left: 3pt solid #1f2328; padding: 9pt 13pt 4pt; margin-bottom: 12pt; }
-.abstract h4, .toc h4 { font-family: 'IBM Plex Sans Thai'; font-size: 10.5pt; margin: 0 0 5pt; }
-.abstract p { font-size: 9.5pt; line-height: 1.55; }
-.kw { font-size: 8.8pt; color: #3c4043; }
-.toc ol { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 18pt; font-size: 9pt; }
-.toc li { margin: 0 0 2.5pt; }
-.toc a::after { content: leader('.') target-counter(attr(href), page); color: #5f6368; }
-"""
-
-HTML_DOC = f"""<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">
-<title>การยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา–ทุนดำ</title>
-<meta name="keywords" content="demonetization, Thailand, money laundering, cash, agent-based model">
-<style>{CSS}</style></head><body>
-<section class="cover">
-<div class="label">เอกสารวิจัยฉบับร่าง · WORKING PAPER</div>
-<div class="title">การยกเลิกธนบัตร 1,000 บาทเพื่อปราบทุนเทา–ทุนดำ: บทเรียนนานาชาติ แบบจำลองเชิงนโยบาย และวาระการวิจัยสำหรับประเทศไทย</div>
-<div class="sub">Demonetizing the 1,000-Baht Note: International Evidence, a Policy Simulation, and a Research Agenda for Thailand</div>
-<div class="meta">7 พฤศจิกายน 2026 · ร่างเพื่อการอภิปราย ตัวเลขทั้งหมดเป็นค่าประมาณที่ต้องตรวจทาน · โค้ดและข้อมูลจำลอง: demonet_sim_th.py</div>
-<table class="keys"><tr>{keys_html}</tr></table>
-<div class="abstract"><h4>บทคัดย่อ</h4>{ABSTRACT}</div>
-<div class="toc"><h4>สารบัญ</h4><ol>{toc_html}</ol></div>
-</section>
-{body}
-</body></html>"""
-
-open(os.path.join('figs_th', 'paper_th.html'), 'w', encoding='utf-8').write(HTML_DOC)
-HTML(string=HTML_DOC, base_url=HERE, encoding='utf-8').write_pdf(os.path.join('pdf', 'paper_th.pdf'))
+for n in CAPTIONS:
+    figure_shapes(n)
+with open(f'{BUILD}/paper_th.tex', 'w', encoding='utf-8') as fh:
+    fh.write(template)
+subprocess.run(['tectonic', '--chatter', 'minimal', '--keep-logs', 'paper_th.tex'], cwd=BUILD, check=True)
+shutil.copyfile(f'{BUILD}/paper_th.pdf', os.path.join('pdf', 'paper_th.pdf'))
 print('ok', os.path.getsize(os.path.join('pdf', 'paper_th.pdf')), 'bytes')

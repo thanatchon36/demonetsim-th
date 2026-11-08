@@ -27,6 +27,7 @@ RESULTS = ROOT / "results"
 OUT = ROOT / "docs" / "paper"
 REPO_URL = "https://github.com/thanatchon36/demonetsim-th"
 PAPER_URL = "https://thanatchon36.github.io/demonetsim-th/paper/"
+DATA_URL = "https://huggingface.co/datasets/thanatchon36/demonetsim-th"
 
 TITLE = "Can Demonetization Defeat Grey Capital?"
 SUBTITLE = "Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring Thailand's 1,000-Baht Note"
@@ -254,6 +255,7 @@ def build() -> Path:
         '<li><a href="paper_en.pdf">Download PDF</a></li>'
         '<li><a href="paper_th.pdf">ฉบับภาษาไทย (PDF)</a></li>'
         f'<li><a href="{REPO_URL}">Code and replication</a></li>'
+        f'<li><a href="{DATA_URL}">Data (Hugging Face)</a></li>'
     )
     bib = (
         "@misc{chongmankhong2026demonetization,\n"

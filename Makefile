@@ -19,7 +19,7 @@ paper-en:       ## English paper (pdflatex, arXiv preprint format) -> paper/pdf/
 	cd paper/en && pdflatex -interaction=nonstopmode main.tex >/dev/null && pdflatex -interaction=nonstopmode main.tex >/dev/null
 	cp paper/en/main.pdf paper/pdf/paper_en.pdf
 
-paper-th:       ## Thai paper (WeasyPrint) -> paper/pdf/paper_th.pdf
+paper-th:       ## Thai paper, arXiv preprint format (pandoc + tectonic) -> paper/pdf/paper_th.pdf
 	$(PY) paper/build_th.py
 
 paper: paper-en paper-th web

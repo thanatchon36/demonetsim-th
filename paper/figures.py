@@ -10,7 +10,7 @@ def esc(s):
     return str(s).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
-TEXTS = []  # text is overlaid as HTML so Thai marks are shaped by Pango
+TEXTS = []  # labels are kept apart from the shapes and set by XeTeX (build_th.py), which shapes the Thai marks
 
 
 def T(x, y, s, size=12, w=400, anchor='start', fill=INK):

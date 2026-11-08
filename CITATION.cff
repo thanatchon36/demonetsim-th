@@ -13,8 +13,9 @@ type: software
 authors:
   - family-names: Chongmankhong
     given-names: Thanatchon
-version: 1.0.0
-date-released: 2026-11-07
+    alias: "ธนัชชนม์ จงมั่นคง"
+version: 1.1.0
+date-released: 2026-11-08
 license: MIT
 repository-code: "https://github.com/thanatchon36/demonetsim-th"
 url: "https://thanatchon36.github.io/demonetsim-th/paper/"

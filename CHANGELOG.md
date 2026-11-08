@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-08
+
 ### Added
 - MIT license.
 - Web reader for the English paper, `docs/paper/index.html`, built from `paper/en/main.tex` by `paper/build_web.py`
@@ -15,9 +17,17 @@ All notable changes to this project are documented here. The format follows
 - Test suite (`make test`): denomination and bulk figures, accounting identities and comparative statics of the
   model, ABC acceptance, and a check that the committed `results/` carry the numbers the paper quotes. CI runs it on
   every push and pull request.
-- `pyproject.toml`, `make setup` (uv, Python 3.12), `CHANGELOG.md` and `.zenodo.json`.
+- Dataset on Hugging Face, [`thanatchon36/demonetsim-th`](https://huggingface.co/datasets/thanatchon36/demonetsim-th)
+  (CC BY 4.0): every file in `results/` plus the scenario priors and holder groups as `inputs/`, built by
+  `scripts/export_hf.py`.
+- Zenodo archiving of releases (`.zenodo.json`); DOI badge in the README.
+- `pyproject.toml`, `make setup` (uv, Python 3.12) and `CHANGELOG.md`.
 
 ### Changed
+- The Thai paper is set in the same arXiv preprint layout as the English one: `paper/build_th.py` converts
+  `paper/paper_th.md` to LaTeX with pandoc (`paper/template_th.tex`) and compiles it with tectonic, with Times for
+  Latin text and Sarabun (bundled in `paper/fonts/`) for Thai. Figure labels are set by XeTeX over shapes converted
+  by svglib, so the Thai build no longer needs WeasyPrint. Author: ธนัชชนม์ จงมั่นคง.
 - Dependencies moved from `requirements.txt` to `pyproject.toml` (core, `paper` and `dev` extras).
 - `tools/` renamed to `scripts/`.
 - `CITATION.cff` describes the software and cites the paper as the preferred citation.
@@ -34,3 +44,6 @@ All notable changes to this project are documented here. The format follows
 - English paper in arXiv preprint format (`paper/en/main.tex`, 12 vector figures with an automatic text-overlap check)
   and its Thai-language companion (`paper/paper_th.md`, built with WeasyPrint); compiled PDFs in `paper/pdf/`.
 - Master prompt used to structure the research (`prompts/master_prompt_th.md`).
+
+[Unreleased]: https://github.com/thanatchon36/demonetsim-th/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/thanatchon36/demonetsim-th/releases/tag/v1.1.0
