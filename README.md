@@ -129,6 +129,7 @@ prompts/master_prompt_th.md master prompt used to structure the research (Thai)
 scripts/
   check_whitespace.py       measures blank space on every page of a PDF
   make_banner.py            README banner and preview
+  make_poster.py            LinkedIn launch poster (docs/assets/linkedin_poster.png)
   export_hf.py, hf_card.md  Hugging Face dataset and its card
 tests/                      denominations, model identities and statics, committed results
 ```

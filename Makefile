@@ -1,6 +1,6 @@
 PY ?= .venv/bin/python
 
-.PHONY: setup simulate analysis figures paper-en paper-th paper web banner arxiv test all clean
+.PHONY: setup simulate analysis figures paper-en paper-th paper web banner poster arxiv test all clean
 
 setup:          ## create venv and install the dependencies (needs uv)
 	uv venv .venv --python 3.12
@@ -29,6 +29,9 @@ web:            ## web reader -> docs/paper/index.html (pandoc), served at https
 
 banner:         ## README images -> docs/assets/banner.png, docs/assets/preview.png
 	$(PY) scripts/make_banner.py
+
+poster:         ## LinkedIn launch poster -> docs/assets/linkedin_poster.png
+	$(PY) scripts/make_poster.py
 
 arxiv:          ## arXiv upload package -> build/arxiv_source.zip
 	rm -rf build/arxiv_source && mkdir -p build/arxiv_source/figs_en build/arxiv_source/anc
