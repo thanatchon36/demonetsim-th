@@ -16,6 +16,7 @@ authors:
     alias: "ธนัชชนม์ จงมั่นคง"
 version: 1.1.0
 date-released: 2026-11-08
+doi: 10.5281/zenodo.24050061
 license: MIT
 repository-code: "https://github.com/thanatchon36/demonetsim-th"
 url: "https://thanatchon36.github.io/demonetsim-th/paper/"
@@ -27,5 +28,6 @@ preferred-citation:
     - family-names: Chongmankhong
       given-names: Thanatchon
   year: 2026
+  doi: 10.5281/zenodo.24050061
   url: "https://thanatchon36.github.io/demonetsim-th/paper/"
   notes: "Preprint draft; statistics are approximations and model parameters are assumptions."

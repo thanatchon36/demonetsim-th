@@ -166,7 +166,8 @@ the Hugging Face dataset is CC BY 4.0.
   title  = {Can Demonetization Defeat Grey Capital? Evidence, a Calibrated Agent-Based Model,
             and a Research Agenda for Retiring {Thailand}'s 1,000-Baht Note},
   year   = {2026},
-  note   = {Preprint},
-  url    = {https://thanatchon36.github.io/demonetsim-th/paper/}
+  doi    = {10.5281/zenodo.24050061},
+  url    = {https://thanatchon36.github.io/demonetsim-th/paper/},
+  note   = {Preprint}
 }
 ```

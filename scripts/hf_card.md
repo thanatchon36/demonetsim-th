@@ -50,7 +50,8 @@ Research Agenda for Retiring Thailand's 1,000-Baht Note* by Thanatchon Chongmank
 DemonetSim-TH is an agent-based model in which illicit holders choose among deposit, structuring through money
 mules, conversion into gold, FX or crypto, amnesty and abandonment under capacity-constrained laundering, while
 honest holders face a liquidity gap governed by replacement logistics. It is calibrated to India's 2016
-demonetization by rejection ABC on the 99.3% return rate. Code: <https://github.com/thanatchon36/demonetsim-th>.
+demonetization by rejection ABC on the 99.3% return rate. Code: <https://github.com/thanatchon36/demonetsim-th>;
+archived on Zenodo: [10.5281/zenodo.24050061](https://doi.org/10.5281/zenodo.24050061).
 
 *Independent personal research. Does not represent the views of any employer or institution.*
 
@@ -115,7 +116,8 @@ CC BY 4.0 (`LICENSE`). The code that produced the data is MIT licensed.
   title  = {Can Demonetization Defeat Grey Capital? Evidence, a Calibrated Agent-Based Model,
             and a Research Agenda for Retiring {Thailand}'s 1,000-Baht Note},
   year   = {2026},
-  note   = {Preprint},
-  url    = {https://thanatchon36.github.io/demonetsim-th/paper/}
+  doi    = {10.5281/zenodo.24050061},
+  url    = {https://thanatchon36.github.io/demonetsim-th/paper/},
+  note   = {Preprint}
 }
 ```

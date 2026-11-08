@@ -28,6 +28,7 @@ OUT = ROOT / "docs" / "paper"
 REPO_URL = "https://github.com/thanatchon36/demonetsim-th"
 PAPER_URL = "https://thanatchon36.github.io/demonetsim-th/paper/"
 DATA_URL = "https://huggingface.co/datasets/thanatchon36/demonetsim-th"
+CONCEPT_DOI = "10.5281/zenodo.24050061"
 
 TITLE = "Can Demonetization Defeat Grey Capital?"
 SUBTITLE = "Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring Thailand's 1,000-Baht Note"
@@ -256,14 +257,16 @@ def build() -> Path:
         '<li><a href="paper_th.pdf">ฉบับภาษาไทย (PDF)</a></li>'
         f'<li><a href="{REPO_URL}">Code and replication</a></li>'
         f'<li><a href="{DATA_URL}">Data (Hugging Face)</a></li>'
+        f'<li><a href="https://doi.org/{CONCEPT_DOI}">Zenodo archive</a></li>'
     )
     bib = (
         "@misc{chongmankhong2026demonetization,\n"
         "  author = {Chongmankhong, Thanatchon},\n"
         f"  title  = {{{TITLE} {SUBTITLE.replace('Thailand', '{Thailand}')}}},\n"
         "  year   = {2026},\n"
-        "  note   = {Preprint},\n"
-        f"  url    = {{{PAPER_URL}}}\n"
+        f"  doi    = {{{CONCEPT_DOI}}},\n"
+        f"  url    = {{{PAPER_URL}}},\n"
+        "  note   = {Preprint}\n"
         "}"
     )
     colophon = (
