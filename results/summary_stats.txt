@@ -1,0 +1,22 @@
+PRCC, scenario S1 (sorted by absolute value)
+  hit: illicit_share +0.73, cap_struct_total -0.73, q_struct +0.33, fee_struct +0.22, fee_conv +0.20
+  laund: cap_struct_total +0.71, fee_struct -0.54, kyc_bank -0.44, fee_conv +0.36, cap_conv_total -0.36
+  liq: r_day -0.97, pre_supply -0.87, kyc_bank -0.14, kyc_dealer +0.10, black_frac -0.04
+
+Medians with bootstrap standard errors (1000 resamples)
+  IN16  hit       median   0.0851   SE 0.0025
+  IN16  liq_index median  96.8120   SE 1.1621
+  S1    hit       median   0.0768   SE 0.0025
+  S1    liq_index median  17.1668   SE 0.4206
+  S2    hit       median   0.0338   SE 0.0004
+  S2    liq_index median   0.4229   SE 0.1320
+  S3    hit       median   0.0103   SE 0.0001
+  S3    liq_index median   0.0000   SE 0.0000
+  S4    hit       median   0.0605   SE 0.0009
+  S4    liq_index median   0.0000   SE 0.0000
+
+ABC calibration to India 2016: 1214 of 4000 draws accepted (30.3%)
+  illicit_share  prior p10/p50/p90 [0.048, 0.157, 0.271]   posterior [0.042, 0.130, 0.259]
+  hit            prior p10/p50/p90 [0.050, 0.093, 0.238]   posterior [0.047, 0.085, 0.159]
+  laundered      prior p10/p50/p90 [0.469, 0.618, 0.739]   posterior [0.461, 0.620, 0.728]
+  displaced      prior p10/p50/p90 [0.126, 0.220, 0.396]   posterior [0.143, 0.250, 0.442]

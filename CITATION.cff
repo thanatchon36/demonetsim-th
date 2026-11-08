@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "DemonetSim-TH: Can Demonetization Defeat Grey Capital?"
+authors:
+  - family-names: "Chongmankhong"
+    given-names: "Thanatchon"
+version: "1.0.0"
+date-released: 2026-11-07
+keywords:
+  - demonetization
+  - money laundering
+  - agent-based model
+  - approximate Bayesian computation
+  - Thailand
+preferred-citation:
+  type: article
+  title: "Can Demonetization Defeat Grey Capital? Evidence, a Calibrated Agent-Based Model, and a Research Agenda for Retiring Thailand's 1,000-Baht Note"
+  authors:
+    - family-names: "Chongmankhong"
+      given-names: "Thanatchon"
+  year: 2026
+  status: preprint

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+# LaTeX build files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+paper/en/main.pdf
+
+# generated during builds
+paper/figs_th/
+build/
